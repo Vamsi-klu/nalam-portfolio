@@ -1,0 +1,78 @@
+import { Reveal } from "@/components/motion/Reveal";
+import { site } from "@/content/site";
+
+export function About() {
+  return (
+    <section id="about" className="section">
+      <Reveal>
+        <h2 className="section-title">about me</h2>
+      </Reveal>
+
+      <div className="grid items-start gap-12 lg:grid-cols-[1.15fr_0.85fr]">
+        <div className="space-y-4">
+          {site.about.map((paragraph, i) => (
+            <Reveal key={i} delay={0.05 * i}>
+              <p className="text-base leading-relaxed text-slate md:text-[1.05rem]">
+                {paragraph}
+              </p>
+            </Reveal>
+          ))}
+
+          <Reveal delay={0.2}>
+            <div className="mt-8 flex flex-wrap gap-2">
+              {site.now.map((item) => (
+                <span
+                  key={item.label}
+                  className="inline-flex items-center gap-2 rounded border border-lightest-navy bg-light-navy/40 px-3 py-1.5 font-mono text-xs text-light-slate"
+                >
+                  <span className="text-accent">{item.label}</span>
+                  <span className="text-lightest-navy">·</span>
+                  <span>{item.value}</span>
+                </span>
+              ))}
+            </div>
+          </Reveal>
+
+          <Reveal delay={0.25}>
+            <div className="mt-10 grid gap-6 sm:grid-cols-2">
+              {Object.entries(site.skills).map(([category, skills]) => (
+                <div key={category}>
+                  <h3 className="mb-3 font-mono text-xs uppercase tracking-wider text-accent">
+                    {category}
+                  </h3>
+                  <ul className="space-y-1.5">
+                    {skills.map((skill) => (
+                      <li
+                        key={skill}
+                        className="skill-bullet text-sm text-light-slate"
+                      >
+                        {skill}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </Reveal>
+        </div>
+
+        <Reveal delay={0.15}>
+          <div className="group relative mx-auto w-full max-w-[300px] lg:mx-0 lg:ml-auto">
+            <div
+              className="absolute -inset-0 translate-x-3 translate-y-3 rounded border border-accent transition-transform duration-300 group-hover:translate-x-4 group-hover:translate-y-4"
+              aria-hidden
+            />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/profile.jpg"
+              alt={`${site.name} — GitHub profile photo`}
+              width={300}
+              height={300}
+              className="relative z-10 aspect-square w-full rounded object-cover object-top grayscale transition duration-300 group-hover:-translate-y-1.5 group-hover:grayscale-0"
+            />
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
