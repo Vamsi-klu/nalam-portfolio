@@ -1,7 +1,20 @@
+/**
+ * Closing call to action with the contact channels.
+ *
+ * A Server Component. Email and phone are rendered as `mailto:` / `tel:` links so they
+ * work from a phone; the phone number is guarded so removing `site.phone` cleanly drops
+ * the line rather than rendering an empty link.
+ */
+
 import { Mail, Phone } from "lucide-react";
 import { Reveal } from "@/components/motion/Reveal";
 import { site } from "@/content/site";
 
+/**
+ * Local copy of the GitHub mark — identical to the one in `Builds.tsx`, and a different
+ * visual style from the stroked version in `@/components/ui/icons`. See the note there;
+ * prefer the shared module for new work.
+ */
 function GithubIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -15,6 +28,7 @@ function GithubIcon({ className }: { className?: string }) {
   );
 }
 
+/** Local solid-fill LinkedIn mark, paired with the GitHub copy above. */
 function LinkedinIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -83,6 +97,8 @@ export function Contact() {
           {site.phone ? (
             <p className="mt-8 flex items-center justify-center gap-2 text-xs text-slate/70">
               <Phone className="h-3 w-3" aria-hidden />
+              {/* Display keeps the readable formatting; the href strips everything but
+                  digits and a leading + so dialers parse it reliably. */}
               <a
                 href={`tel:${site.phone.replace(/[^\d+]/g, "")}`}
                 className="font-mono transition-colors hover:text-light-slate"

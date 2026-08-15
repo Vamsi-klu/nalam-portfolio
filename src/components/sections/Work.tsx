@@ -1,3 +1,13 @@
+/**
+ * "Selected work" — themed capability cards rather than individual projects.
+ *
+ * The framing is what keeps this section publishable: it describes domains and stacks,
+ * not the confidential specifics of employer work. See the editorial rules in
+ * `src/content/site.ts`.
+ *
+ * A Server Component; the only client code is the `Reveal` wrapper.
+ */
+
 import { Reveal } from "@/components/motion/Reveal";
 import { work } from "@/content/site";
 
@@ -11,6 +21,8 @@ export function Work() {
       </Reveal>
 
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {/* Index-scaled delay staggers the cards in rather than revealing the row at
+            once. `as="article"` keeps the wrapper from breaking the card semantics. */}
         {work.map((item, i) => (
           <Reveal key={item.id} delay={0.08 * (i + 1)} as="article">
             <article className="card-lift flex h-full flex-col rounded border border-lightest-navy bg-light-navy p-6">

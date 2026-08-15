@@ -1,3 +1,13 @@
+/**
+ * Landing section — the full-viewport introduction.
+ *
+ * The only section that doesn't use the shared `.section` class, because it's
+ * `min-h-screen` and lays out as a two-column split (copy on the left, interactive ASCII
+ * portrait on the right) rather than a centered content column.
+ *
+ * A Client Component for the typewriter effect and the staggered entrance.
+ */
+
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
@@ -5,6 +15,11 @@ import { TypeAnimation } from "react-type-animation";
 import { AsciiPortrait } from "@/components/canvas/AsciiPortrait";
 import { site } from "@/content/site";
 
+/**
+ * Parent variant. Animating the container drives its children through Framer Motion's
+ * variant propagation, so each child inherits the `show` state on a stagger instead of
+ * needing its own delay.
+ */
 const container = {
   hidden: { opacity: 0 },
   show: {
@@ -13,6 +28,7 @@ const container = {
   },
 };
 
+/** Child variant: rise and fade, on a sharp ease-out so the entrance settles quickly. */
 const item = {
   hidden: { opacity: 0, y: 18 },
   show: {
@@ -30,6 +46,8 @@ export function Hero() {
       id="intro"
       className="relative mx-auto flex min-h-screen max-w-6xl flex-col justify-center gap-10 px-6 py-28 md:flex-row md:items-center md:gap-8 md:px-8 lg:gap-14"
     >
+      {/* `initial={false}` under reduced motion skips the entrance entirely and mounts
+          in the final state, rather than animating quickly. */}
       <motion.div
         className="relative z-10 max-w-xl flex-1"
         variants={container}
@@ -75,9 +93,15 @@ export function Hero() {
           variants={item}
           className="mb-3 min-h-[1.75rem] font-mono text-sm text-accent md:text-base"
         >
+          {/* Reduced motion falls back to the first line, which is why `heroLines[0]`
+              should be the strongest of the three. */}
           {reduce ? (
             site.heroLines[0]
           ) : (
+            // TypeAnimation takes a flat alternating sequence of [text, pauseMs, ...],
+            // hence the flatMap: each line is followed by a 2.2s hold before the next.
+            // `min-h` on the parent reserves the line box so the layout doesn't jump as
+            // lines of different lengths type in and out.
             <TypeAnimation
               sequence={site.heroLines.flatMap((line) => [line, 2200])}
               wrapper="span"

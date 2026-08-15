@@ -1,0 +1,73 @@
+---
+description: Core facts about the nalam-portfolio repo — stack, structure, and the invariants that hold across every change
+alwaysApply: true
+---
+
+# nalam-portfolio
+
+Personal portfolio for Ramachandra Nalam, Data Engineer. Dark navy/teal, cinematic,
+single page, deployed on Vercel at nalamportfolio.dev. Design language is borrowed from
+gazijarin.com.
+
+Next.js 16.2.10 (App Router, Turbopack) · React 19.2 · TypeScript strict · Tailwind CSS
+v4 configured in CSS · Framer Motion 12 · `@vercel/analytics`.
+
+## Shape of the app
+
+One route, `/`, fully prerendered as static content. No backend, no route handlers, no
+Server Actions, no runtime data fetching, and nothing reads `process.env`. `page.tsx`
+composes eight anchored sections in order: Hero, About, Impact, Experience, Work, Oss,
+Builds, Contact — with `NavBar` and `SidebarNav` as chrome and a `Footer`.
+
+```
+src/app/          layout.tsx (fonts, metadata, Analytics), page.tsx, globals.css
+src/components/   canvas/ layout/ motion/ sections/ ui/
+src/content/      site.ts — all copy and data
+src/lib/          utils.ts — cn()
+```
+
+Keeping the app static is a goal, not an accident. Don't introduce a runtime dependency
+without a strong reason.
+
+## Invariants
+
+1. **All user-visible copy lives in `src/content/site.ts`.** Components hold layout and
+   behavior only. Never hardcode prose into a `.tsx`.
+2. **Employer-confidential detail stays off the site.** Meta / Amazon / UB descriptions
+   are deliberately high-level. Don't add specificity to them. OSS entries are the
+   opposite — every PR links to a public, verifiable diff.
+3. **Server Components by default.** `"use client"` only for state, effects, or browser
+   APIs. Wrap server-rendered children in `<Reveal>` rather than converting a whole
+   section.
+4. **Every animation has a reduced-motion path.** `useReducedMotion()` in React code,
+   `window.matchMedia` in canvas code.
+5. **Colors come from tokens in `globals.css`,** never raw hex in components.
+6. **Named exports for components.** Default exports only in `layout.tsx` / `page.tsx`.
+7. **Import through `@/`** (→ `src/`). No deep relative paths.
+
+## Commands
+
+`npm run dev` · `npm run lint` · `npm run build` · `npm run start`
+
+`npm run build` runs TypeScript but **not** ESLint (Next.js 16 removed `next lint` and
+dropped linting from the build). Run `npm run lint` separately before finishing.
+
+**Lint already fails on a clean checkout** with exactly one pre-existing error:
+`react-hooks/set-state-in-effect` at `AsciiPortrait.tsx:143`, from the React Compiler
+rules enabled by `eslint-plugin-react-hooks` v7 via `eslint-config-next` 16. Don't chase
+a clean run — the bar is no *new* errors.
+
+## Existing oddities — intentional or known, don't "fix" incidentally
+
+- `src/components/sections/index.ts` is a partial barrel (4 of 8 sections) that nothing
+  imports; `page.tsx` imports directly.
+- `PipelineParticles` is finished but mounted nowhere.
+- `education` and `site.resumeUrl` are exported but unused; `public/resume.pdf` doesn't
+  exist and `public/profile-photo.jpg` is unreferenced.
+- `impact` is a rendered section deliberately missing from the `nav` array.
+- `GithubIcon` exists in three files, `LinkedinIcon` in two, in two different styles.
+
+## Docs
+
+`docs/ARCHITECTURE.md` · `docs/CONTENT.md` · `docs/DESIGN-SYSTEM.md` ·
+`docs/DEPLOYMENT.md` · `CONTRIBUTING.md` · `AGENTS.md`

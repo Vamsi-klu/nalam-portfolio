@@ -1,0 +1,86 @@
+---
+description: Next.js 16 breaking changes and traps that contradict older training data — read before writing framework code
+alwaysApply: true
+---
+
+# Next.js 16 — what changed
+
+This repo runs Next.js 16.2.10. Version-matched documentation ships inside the package
+at `node_modules/next/dist/docs/`, mirroring the structure of nextjs.org/docs. **Read
+the relevant page there before writing framework code.** The upgrade notes below are
+condensed from `01-app/02-guides/upgrading/version-16.md`; consult it for anything not
+covered.
+
+Requirements: Node.js 20.9+, TypeScript 5.1+. The App Router runs React 19.2.
+
+## Traps that bite hardest
+
+**Turbopack is the default** for both `next dev` and `next build`. The `--turbopack`
+flag is obsolete — this repo's scripts are correctly plain `next dev` / `next build`.
+Don't add the flag back. A custom `webpack` config now *fails* the build; opt out with
+`--webpack` if you ever truly need it.
+
+**`next lint` was removed and `next build` no longer runs ESLint.** Lint is a separate
+step (`npm run lint` → bare `eslint`). The `eslint` option in the Next config is also
+gone. TypeScript still runs during the build.
+
+**ESLint flat config is the default** for `@next/eslint-plugin-next`, which is what
+`eslint.config.mjs` already uses. Don't migrate back to `.eslintrc`.
+
+**Async request APIs are async-only.** `cookies()`, `headers()`, `draftMode()`, and
+`params` / `searchParams` in `page`, `layout`, `route`, and `default` must be awaited.
+The synchronous compatibility shim from v15 is gone. `params` and `id` in
+`opengraph-image`, `twitter-image`, `icon`, `apple-icon`, and `sitemap` are now Promises
+too. (Not currently relevant here — this app has no dynamic routes — but it's the most
+common way older code breaks.)
+
+**`middleware` is renamed to `proxy`.** The file is `proxy.ts` and the named export is
+`proxy`. The proxy runtime is `nodejs` and cannot be configured; the `edge` runtime is
+not supported there. Config flags renamed accordingly (`skipMiddlewareUrlNormalize` →
+`skipProxyUrlNormalize`).
+
+**`next dev` writes to `.next/dev`,** separate from `next build`'s `.next`, so the two
+can run concurrently. A lockfile prevents two `next dev` instances on the same project.
+
+**Next.js no longer overrides `scroll-behavior` during navigation.** Opt back in with
+`data-scroll-behavior="smooth"` on `<html>`. This repo sets
+`html { scroll-behavior: smooth }` in CSS and does *not* set the attribute — correct
+here, because the site is a single route with only anchor navigation.
+
+## Caching and PPR
+
+The experimental PPR flag and the `experimental_ppr` route segment config are removed.
+PPR is now opted into with the top-level `cacheComponents: true`, and it behaves
+differently from the v15 canaries — see
+`01-app/02-guides/migrating-to-cache-components.md`. `experimental.dynamicIO` and
+`experimental.useCache` are deprecated in favor of the same flag.
+
+`cacheLife` and `cacheTag` are stable — import them from `next/cache` without the
+`unstable_` prefix. `revalidateTag` now requires a second `cacheLife` argument
+(`revalidateTag('posts', 'max')`); the one-argument form is a TypeScript error. New:
+`updateTag` for read-your-writes in Server Actions, and `refresh` to refresh the client
+router.
+
+None of this is used in this repo yet — it's fully static — but reach for the right API
+if you add caching.
+
+## `next/image` defaults changed
+
+`minimumCacheTTL` is 4 hours (was 60s), `qualities` defaults to `[75]` only, `16` was
+dropped from `imageSizes`, redirects are capped at 3, local IP optimization is blocked,
+and local sources with query strings need `images.localPatterns.search`. `images.domains`
+is deprecated in favor of `remotePatterns`, and `next/legacy/image` is deprecated.
+
+## Removed outright
+
+AMP (`next/amp`, `useAmp`, the `amp` config), `serverRuntimeConfig` /
+`publicRuntimeConfig` (use env vars), `unstable_rootParams`, and the `appIsrStatus` /
+`buildActivity` / `buildActivityPosition` dev indicator options.
+
+## Also worth knowing
+
+- Turbopack config moved out of `experimental` to a top-level `turbopack` key.
+- The React Compiler option (`reactCompiler: true`) is stable but off by default.
+- Parallel route slots now require an explicit `default.js` or the build fails.
+- `next build` output no longer reports `size` / `First Load JS`; use Lighthouse or
+  Vercel Analytics to measure real route performance instead.

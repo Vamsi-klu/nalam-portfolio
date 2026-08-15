@@ -1,3 +1,10 @@
+/**
+ * Headline numbers, counting up as they scroll into view.
+ *
+ * This is a rendered section that is deliberately absent from the `nav` array, so it has
+ * no nav link and the sidebar doesn't highlight while you scroll past it.
+ */
+
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -5,11 +12,19 @@ import { useInView, useReducedMotion } from "framer-motion";
 import { Reveal } from "@/components/motion/Reveal";
 import { site } from "@/content/site";
 
+/** Rounds during the animation so intermediate frames don't show noisy decimals. */
 function formatMetric(value: number, decimals: number): string {
   if (decimals > 0) return value.toFixed(decimals);
   return Math.round(value).toString();
 }
 
+/**
+ * Animates 0 -> `value` on first scroll into view, then snaps to `display`.
+ *
+ * The two-value split is what allows a suffixed label: the animation needs a number to
+ * interpolate (`value`), while the final rendering is a string (`display`, e.g. `100+`).
+ * If the two disagree the number visibly jumps on the last frame.
+ */
 function CountUp({
   value,
   suffix,
@@ -21,6 +36,7 @@ function CountUp({
 }) {
   const reduce = useReducedMotion();
   const ref = useRef<HTMLSpanElement>(null);
+  // `once: true` matches Reveal — the count never replays on scroll-back.
   const inView = useInView(ref, { once: true, margin: "-40px" });
   const decimals = Number.isInteger(value) ? 0 : 1;
   const [text, setText] = useState(`0${suffix}`);
@@ -34,8 +50,11 @@ function CountUp({
 
     const tick = (now: number) => {
       const t = Math.min(1, (now - start) / durationMs);
+      // Cubic ease-out: fast at first, decelerating into the final value, which reads as
+      // a counter settling rather than a linear ramp.
       const eased = 1 - Math.pow(1 - t, 3);
       if (t >= 1) {
+        // Land on the authored string so suffixes like "+" appear exactly as written.
         setText(display);
         return;
       }
@@ -48,6 +67,8 @@ function CountUp({
   }, [inView, reduce, value, suffix, display, decimals]);
 
   return (
+    // `tabular-nums` fixes digit width so the surrounding layout doesn't shift while the
+    // number changes on every frame.
     <span ref={ref} className="tabular-nums">
       {reduce ? display : text}
     </span>

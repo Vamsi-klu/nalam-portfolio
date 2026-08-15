@@ -1,0 +1,53 @@
+---
+description: How src/content/site.ts is structured and the editorial rules for changing copy
+globs: src/content/**/*.ts
+alwaysApply: false
+---
+
+# Editing site content
+
+`site.ts` is the single source of truth for everything a visitor reads. A content change
+should almost never require touching a component.
+
+## Editorial rules
+
+**Employer work stays high-level.** Meta, Amazon, and University at Buffalo bullets name
+technologies and problem shapes, never internal metrics, product names, or org detail.
+The vagueness is intentional — do not sharpen it. Test: would this be fine on a public
+résumé handed to a competitor?
+
+**Open-source work must be verifiable.** Every entry in `oss.prs` links to a real public
+pull request. This section is the site's central credibility claim; an unverifiable
+entry undermines it.
+
+## Exports and their consumers
+
+| Export | Rendered by | Notes |
+|--------|-------------|-------|
+| `site` | `Hero`, `About`, `Impact`, `Contact`, `NavBar`, `layout` metadata | identity, contact, hero lines, bio, skills, metrics |
+| `experience` | `Experience` | tabbed, newest first |
+| `work` | `Work` | three themed cards |
+| `builds` | `Builds` | personal projects; `github`/`demo` optional |
+| `oss` | `Oss` | headline, upstream chips, PR list, all-PRs search URL |
+| `nav` | `NavBar`, `SidebarNav` | `id` must match a section's `id` attribute |
+| `education` | *nothing* | unused |
+
+## Gotchas
+
+- **`metrics` carries both `value` and `display`.** `Impact` counts up toward `value`
+  then snaps to `display`, which is how `100` renders as `100+`. Change them together or
+  the number visibly jumps at the end.
+- **`heroLines` is cycled by a typing animation**, so keep lines around 40–60 characters.
+  The first entry is also the reduced-motion fallback — make it the strongest.
+- **`nav` order drives the `01.` / `02.` numbering** in `NavBar` and must match the
+  section order in `page.tsx`.
+- **`impact` is deliberately absent from `nav`.** Adding it is a real change, not a fix.
+- **Long company names need a short tab label.** `Experience.tsx` special-cases
+  `"University at Buffalo"` → `"UB"`; the tab strip is a fixed `md:w-40`.
+- **Counts appear twice.** `oss.headline` ("100+ PRs · 20+ merged") and the OSS entries
+  in `site.metrics` describe the same facts. Update both or they drift.
+- **Grid counts:** work and builds render three-up at `lg`, metrics six-up, skills
+  two-up. Multiples that fill a row look best.
+- Array items are keyed by `id` or by their own string, so entries must be unique.
+
+Full detail: `docs/CONTENT.md`.

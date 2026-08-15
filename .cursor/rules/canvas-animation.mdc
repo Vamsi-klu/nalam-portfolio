@@ -1,0 +1,90 @@
+---
+description: Patterns and constraints for the hand-written canvas animations in src/components/canvas
+globs: src/components/canvas/**/*.tsx
+alwaysApply: false
+---
+
+# Canvas components
+
+Two raw 2D-canvas animations, both client-only. They are the most fragile code in the
+repo — they run outside React, hold mutable state, and leak if cleanup is wrong.
+
+## The required shape
+
+Every canvas component follows the same skeleton, and new ones should too:
+
+1. Get the context inside `useEffect`, bailing early if `canvas` or `ctx` is null.
+2. Cap the device pixel ratio: `Math.min(window.devicePixelRatio || 1, 2)`. Uncapped DPR
+   on a 3x display triples the fill rate for no visible gain.
+3. Size the backing store to `size * dpr` and call `ctx.setTransform(dpr, 0, 0, dpr, 0, 0)`
+   so drawing code can work in CSS pixels.
+4. Hold all per-frame state in `useRef`. **Never `useState` for animation state** — it
+   re-renders on every frame.
+5. Drive the loop with `requestAnimationFrame`.
+6. Return a cleanup that cancels the frame *and* removes every listener, observer, and
+   media-query subscription. An uncancelled loop keeps running after unmount.
+
+## Reduced motion
+
+CSS and Framer Motion can't reach canvas drawing, so query it directly:
+
+```ts
+window.matchMedia("(prefers-reduced-motion: reduce)").matches
+```
+
+`PipelineParticles` also subscribes to `change` on that query so toggling the OS setting
+starts and stops the loop live, and draws the static stage guides when stopped.
+`AsciiPortrait` swaps to a plain `<img>` fallback. Both behaviors are required — a new
+canvas component needs one of them.
+
+## The accent color
+
+`#00c7b7` is hardcoded here because canvas drawing can't read CSS custom properties.
+`PipelineParticles` keeps it as the hex `ACCENT` constant; `AsciiPortrait` keeps it as
+the RGB triple `"0, 199, 183"` so per-particle alpha can be interpolated. Changing the
+accent means editing `globals.css` plus both of these.
+
+## AsciiPortrait
+
+Renders `/profile.jpg` as drifting ASCII characters.
+
+- Offscreen canvas → `getImageData` → grid sampling. Column step is `fontSize * 0.7`,
+  row step `fontSize * 1.1`, compensating for monospace glyphs being taller than wide.
+- Brightness selects from the ramp `" .:-=+*#%@"` and sets base alpha. Near-transparent
+  and near-black samples are dropped.
+- Raw samples are cached per size in a ref, so resizing back to a seen size skips the
+  expensive reprocessing. Preserve that cache if you refactor.
+- Particles start scattered and are pulled to their targets by a spring that ramps over
+  ~2.5s with a per-particle delay, so the portrait assembles rather than snapping. The
+  pointer repels within 20% of canvas size. Particles freeze once settled and idle.
+- Font size drops 7px → 5px below 280px wide.
+- Falls back to a static `<img>` on reduced motion **or** image load failure.
+- Carries `role="img"` and a descriptive `aria-label` — a canvas is otherwise opaque to
+  screen readers.
+
+The reduced-motion branch is the source of the repo's one standing lint error:
+`react-hooks/set-state-in-effect` at line 143, where `setStaticFallback(true)` and
+`setReady(true)` are called synchronously in the effect body. The React Compiler rules
+in `eslint-plugin-react-hooks` v7 flag that pattern. Fixing it means deriving the
+fallback during render — `useSyncExternalStore` over the media query is the idiomatic
+route — and should be its own change, verified in both motion modes.
+
+Replacing `public/profile.jpg` affects this directly: a high-contrast, centered,
+head-and-shoulders shot converts well, since the brightness ramp has only ten steps.
+
+## PipelineParticles
+
+An Extract → Transform → Serve pipeline diagram with streaming particles.
+
+- Draws dashed guide rails, a node circle per stage, arrows between stages, and
+  monospace labels, then particles with gradient trails moving left to right.
+- Particles hold a lane (`baseY`), drift back toward it, are repelled within 90px of the
+  pointer, and wrap to the left edge with a fresh lane offset on exit.
+- Particle count scales with canvas area, floored at 28.
+- A `ResizeObserver` on the parent re-derives dimensions and repopulates the field, so
+  the component sizes itself to its parent — the parent needs `position: relative` and a
+  real height.
+- Purely decorative, so it's `aria-hidden`.
+
+**It is currently mounted nowhere.** It's complete and working, just not rendered by
+`page.tsx`. That's a known state, not a bug.

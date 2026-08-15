@@ -1,3 +1,33 @@
+/**
+ * Single source of truth for every word on the site.
+ *
+ * Components in `src/components` hold layout and behavior only — they contain no copy.
+ * Changing what a visitor reads should mean editing this file and nothing else.
+ *
+ * ## Editorial rules
+ *
+ * 1. **Employer-confidential detail stays off this site.** The Meta / Amazon / UB
+ *    bullets name technologies and problem shapes, never internal metrics, product
+ *    names, or org structure. That vagueness is deliberate — do not "improve" these
+ *    entries by adding specificity. Test: would this be fine on a public resume handed
+ *    to a competitor?
+ * 2. **Open-source claims must be verifiable.** Every entry in {@link oss}.prs links to
+ *    a real public pull request. This section is the site's central credibility claim
+ *    ("I don't just use the data stack, I fix it"), and it only works because a reader
+ *    can check each item.
+ *
+ * @see docs/CONTENT.md for the full data model, per-field consumers, and gotchas.
+ */
+
+/**
+ * Identity, contact details, and the top-level copy blocks.
+ *
+ * `as const` matters here: it keeps the literal types (so `heroLines` is a readonly
+ * tuple of specific strings rather than `string[]`) and prevents accidental mutation.
+ *
+ * Consumed by `Hero`, `About`, `Impact`, `Contact`, `NavBar`, and the `metadata` export
+ * in `app/layout.tsx`.
+ */
 export const site = {
   name: "Ramachandra Nalam",
   shortName: "Ramachandra",
@@ -10,7 +40,18 @@ export const site = {
   githubUser: "Vamsi-klu",
   linkedin: "https://www.linkedin.com/in/ramachandra-nalam",
   domain: "https://nalamportfolio.dev",
+  /**
+   * Dangling: no component reads this, and `public/resume.pdf` does not exist.
+   * Either ship the file and link it, or drop the field.
+   */
   resumeUrl: "/resume.pdf",
+  /**
+   * Cycled by the `react-type-animation` typewriter in `Hero`.
+   *
+   * Keep each line to roughly 40-60 characters so it types out in about two seconds.
+   * The first entry doubles as the static fallback under reduced motion, so it should
+   * be the strongest line.
+   */
   heroLines: [
     "Product Analytics | Real-time Pipelines | Data Platforms",
     "100+ Upstream PRs · Building Reliable Systems",
@@ -21,12 +62,18 @@ export const site = {
     "I design batch and streaming platforms, semantic modeling layers, and quality-first warehouse patterns — emphasizing reliability, observability, and maintainable self-serve analytics. Descriptions here stay high-level on purpose; employer-confidential work stays off this site.",
     "Outside work I contribute upstream to Airflow, Pinot, Dagster, Airbyte, Flink, and Polars — I don't just use the data stack, I fix it.",
   ],
+  /** Status chips rendered as `label · value` pairs in `About`. */
   now: [
     { label: "Building", value: "Reliable batch & streaming data platforms" },
     { label: "Learning", value: "Rust + OpenTelemetry for high-perf pipelines" },
     { label: "Contributing", value: "Airflow, Dagster, Airbyte, Pinot" },
     { label: "Exploring", value: "Open-source collabs & community talks" },
   ],
+  /**
+   * Category -> skill list. `About` renders one column per key automatically, so
+   * adding a category needs no component change. The grid is two columns from `sm` up,
+   * so an even number of categories fills every row.
+   */
   skills: {
     Languages: ["Python", "SQL", "Scala", "TypeScript", "Java"],
     Streaming: ["Kafka", "Flink", "Spark Streaming"],
@@ -37,6 +84,22 @@ export const site = {
     Quality: ["Great Expectations", "OpenTelemetry"],
     BI: ["Looker", "Tableau", "Power BI", "Grafana"],
   },
+  /**
+   * The count-up grid in `Impact`.
+   *
+   * Each entry carries both a numeric `value` and a `display` string because the two
+   * serve different phases of the animation: `Impact` animates from zero toward
+   * `value`, then snaps to `display` on the final frame. That split is what lets `100`
+   * render as `100+`.
+   *
+   * Keep `value`, `suffix`, and `display` consistent — if they disagree, the number
+   * visibly jumps when the count-up lands.
+   *
+   * The grid is `lg:grid-cols-6`, so a count divisible by 2, 3, and 6 fills every row.
+   *
+   * The OSS numbers here restate the same facts as `oss.headline`. Update both together
+   * or they drift apart.
+   */
   metrics: [
     { label: "Years experience", value: 5, suffix: "+", display: "5+" },
     { label: "OSS PRs opened", value: 100, suffix: "+", display: "100+" },
@@ -54,6 +117,20 @@ export type Experience = {
   bullets: string[];
 };
 
+/**
+ * Employment history, newest first, rendered as tabs by the `Experience` section.
+ *
+ * Two constraints when adding an entry:
+ *
+ * - The tab strip is a fixed `md:w-40`, so a long company name needs a short label.
+ *   `Experience.tsx` special-cases `"University at Buffalo"` to render as `"UB"`; add a
+ *   similar case rather than letting the tab overflow.
+ * - Bullets are keyed by their own string, so two identical bullets under one company
+ *   collide as React keys. Keep them distinct.
+ *
+ * Remember the confidentiality rule at the top of this file — these bullets stay
+ * high-level on purpose.
+ */
 export const experience: Experience[] = [
   {
     company: "Meta",
@@ -96,9 +173,20 @@ export type WorkItem = {
   org: string;
   summary: string;
   stack: string[];
+  /**
+   * Short *qualitative* pills ("Streaming + batch", "Quality-first") — not numbers.
+   * Numeric achievements belong in `site.metrics`, which animates them.
+   */
   metrics: string[];
 };
 
+/**
+ * Themed capability cards under "selected work".
+ *
+ * These summarize domains rather than individual projects, which is what keeps them
+ * publishable while the underlying employer work stays confidential. Cards render
+ * three-up at `lg`, so multiples of three lay out cleanly.
+ */
 export const work: WorkItem[] = [
   {
     id: "streaming-analytics",
@@ -138,6 +226,15 @@ export type BuildItem = {
   demo?: string;
 };
 
+/**
+ * Personal side projects.
+ *
+ * `github` and `demo` are both optional and `Builds` renders each icon conditionally,
+ * so an entry with neither still renders cleanly — it just shows no link affordance.
+ *
+ * Titles render in monospace and are treated as repo names, so keep them lowercase and
+ * hyphenated to match the actual repository. Cards render three-up at `lg`.
+ */
 export const builds: BuildItem[] = [
   {
     id: "nl2sql",
@@ -196,6 +293,16 @@ export type OssPr = {
   url: string;
 };
 
+/**
+ * The open-source section — the site's strongest differentiator, and the only place
+ * where specific, checkable claims are made.
+ *
+ * Every entry in `prs` must point at a real public pull request. An unverifiable entry
+ * doesn't just fail to help, it undermines the whole section.
+ *
+ * `headline` restates the counts that also appear in `site.metrics`. Update both
+ * together.
+ */
 export const oss = {
   headline: "100+ PRs · 20+ merged across the modern data stack",
   summary:
@@ -233,10 +340,30 @@ export const oss = {
       url: "https://github.com/apache/airflow/pull/66296",
     },
   ] satisfies OssPr[],
+  /**
+   * GitHub search scoped to the author, so the "View all PRs" link stays current
+   * without anyone maintaining a list.
+   */
   allPrsUrl:
     "https://github.com/search?q=author%3AVamsi-klu+is%3Apr&type=pullrequests",
 };
 
+/**
+ * Drives both `NavBar` (top bar) and `SidebarNav` (the vertical rail on large screens).
+ *
+ * Each `id` **must** match the `id` attribute of the corresponding `<section>` in
+ * `app/page.tsx`. If it doesn't, the anchor link and the sidebar scroll-spy both fail
+ * silently — no error, the link simply does nothing.
+ *
+ * Order matters twice: `NavBar` derives its `01.` / `02.` numbering from the array
+ * index, and the sidebar highlights in scroll order, so this should mirror the section
+ * order in `page.tsx`.
+ *
+ * Note `impact` is a rendered section that is deliberately absent here, so it has no
+ * nav link and the sidebar doesn't highlight while you scroll past it. Adding
+ * `{ id: "impact", label: "impact" }` between `about` and `experience` would change
+ * that — it's a decision, not a missing entry.
+ */
 export const nav = [
   { id: "intro", label: "home" },
   { id: "about", label: "about" },
@@ -247,6 +374,9 @@ export const nav = [
   { id: "contact", label: "contact" },
 ] as const;
 
+/**
+ * Currently unused — no component imports this. Kept for a future education section.
+ */
 export const education = [
   {
     degree: "MS Data Science",

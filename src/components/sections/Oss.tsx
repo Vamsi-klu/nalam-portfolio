@@ -1,3 +1,14 @@
+/**
+ * Open-source contributions — the site's central credibility claim.
+ *
+ * Unlike the employer sections, which stay deliberately high-level, everything here is
+ * specific and checkable: each pull request links to a public diff, and the closing link
+ * is a GitHub search scoped to the author so a reader can audit the whole claim. That
+ * verifiability is the point of the section, so never add an entry that can't be opened.
+ *
+ * A Server Component.
+ */
+
 import { ExternalLink } from "lucide-react";
 import { Reveal } from "@/components/motion/Reveal";
 import { oss } from "@/content/site";
@@ -51,6 +62,10 @@ export function Oss() {
               recent merges &amp; PRs
             </p>
             <ul className="flex flex-col gap-2">
+              {/* Keyed by URL since it's the one guaranteed-unique field, and `as="li"`
+                  keeps these valid children of the <ul>. Caveat: under reduced motion
+                  Reveal renders a <div> regardless of `as`, so this becomes a <div> in a
+                  <ul> — renders fine, technically invalid. */}
               {oss.prs.map((pr, i) => (
                 <Reveal key={pr.url} delay={0.05 * (i + 1)} as="li">
                   <a

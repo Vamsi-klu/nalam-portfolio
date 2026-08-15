@@ -1,7 +1,21 @@
+/**
+ * "Selected builds" — personal side projects, each linking out to its repo and demo.
+ *
+ * A Server Component.
+ */
+
 import { ExternalLink, FolderGit2 } from "lucide-react";
 import { Reveal } from "@/components/motion/Reveal";
 import { builds } from "@/content/site";
 
+/**
+ * Local copy of the GitHub mark, in the solid filled brand style.
+ *
+ * Duplicated: `Contact.tsx` has an identical copy, and `@/components/ui/icons` exports a
+ * differently-styled stroked outline version sized by a `size` prop instead of
+ * `className`. The two styles are not interchangeable at a glance. Prefer the shared
+ * `ui/icons` module for new work; consolidating these is a pending cleanup.
+ */
 function GithubIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -33,6 +47,8 @@ export function Builds() {
                   <FolderGit2 className="h-5 w-5" aria-hidden />
                 </div>
 
+                {/* Both links are optional, so a project with neither still renders as
+                    a valid card — it just shows no link affordance. */}
                 <div className="flex items-center gap-2">
                   {item.github ? (
                     <a

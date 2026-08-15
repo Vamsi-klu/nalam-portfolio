@@ -1,3 +1,12 @@
+/**
+ * Vertical section rail on large screens, with scroll-spy highlighting.
+ *
+ * Shares the `nav` array with `NavBar`. Hidden below `lg`, where `NavBar`'s overlay menu
+ * covers the same job.
+ *
+ * @see docs/ARCHITECTURE.md
+ */
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -10,6 +19,9 @@ export function SidebarNav() {
   const reduce = useReducedMotion();
 
   useEffect(() => {
+    // Only observe sections that actually exist. A `nav` entry whose id doesn't match a
+    // rendered section is silently skipped here — which is exactly why a typo in `nav`
+    // produces no error, just a link that highlights nothing.
     const ids = nav.map((item) => item.id);
     const elements = ids
       .map((id) => document.getElementById(id))
@@ -19,6 +31,8 @@ export function SidebarNav() {
 
     const observer = new IntersectionObserver(
       (entries) => {
+        // Several sections can straddle the band at once, so pick the one occupying most
+        // of it rather than whichever entry happened to fire last.
         const visible = entries
           .filter((e) => e.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
@@ -26,7 +40,14 @@ export function SidebarNav() {
           setActive(visible[0].target.id);
         }
       },
-      { rootMargin: "-35% 0px -45% 0px", threshold: [0, 0.25, 0.5, 1] }
+      {
+        // Shrink the viewport to a band roughly in its middle fifth, so a section
+        // becomes "active" when it reaches reading position rather than the moment its
+        // top edge appears. Multiple thresholds keep intersectionRatio updating as
+        // sections cross, instead of only firing at full entry and exit.
+        rootMargin: "-35% 0px -45% 0px",
+        threshold: [0, 0.25, 0.5, 1],
+      }
     );
 
     elements.forEach((el) => observer.observe(el));
@@ -34,6 +55,9 @@ export function SidebarNav() {
   }, []);
 
   return (
+    // The aside itself is pointer-transparent so its empty vertical strip never
+    // intercepts clicks meant for page content; the inner <nav> re-enables events for
+    // the links themselves.
     <motion.aside
       className="pointer-events-none fixed top-1/2 left-6 z-40 hidden -translate-y-1/2 lg:block xl:left-10"
       initial={reduce ? false : { opacity: 0, x: -12 }}

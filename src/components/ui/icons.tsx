@@ -1,3 +1,17 @@
+/**
+ * Shared brand icons, in the stroked outline style that matches `lucide-react`.
+ *
+ * These exist because Lucide dropped its brand marks, but the site still needs GitHub
+ * and LinkedIn glyphs that sit alongside Lucide icons (`Mail`, `Phone`, `ExternalLink`)
+ * without looking foreign — hence the matching `strokeWidth={1.75}`, round caps, and
+ * numeric `size` prop rather than sizing by class.
+ *
+ * Prefer these for new work. Note `Builds.tsx` and `Contact.tsx` each carry their own
+ * *solid filled* copies of the same two marks, sized by `className`. The two styles look
+ * clearly different, so don't mix them within one cluster of icons. Consolidating them
+ * is a pending cleanup.
+ */
+
 export function GithubIcon({
   className,
   size = 18,
