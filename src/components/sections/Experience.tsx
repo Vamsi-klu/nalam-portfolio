@@ -1,3 +1,14 @@
+/**
+ * Employment history as a tabbed panel — company tabs beside a detail pane.
+ *
+ * Implements the full ARIA tabs pattern (`tablist` / `tab` / `tabpanel`, `aria-selected`,
+ * `aria-controls`, `aria-labelledby`, and roving `tabIndex` so only the selected tab is
+ * in the tab order). Preserve that wiring if you restructure the markup.
+ *
+ * Tabs stack horizontally with a bottom rule on mobile and flip to a vertical list with
+ * a left rule at `md`.
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -18,6 +29,8 @@ export function Experience() {
       </Reveal>
 
       <Reveal delay={0.1}>
+        {/* `min-h` reserves room for the tallest panel so switching tabs doesn't make
+            the page below jump. */}
         <div className="flex min-h-[340px] flex-col gap-6 md:flex-row md:gap-10">
           {/* Mobile: horizontal scroll tabs */}
           <div
@@ -44,8 +57,13 @@ export function Experience() {
                       : "text-slate hover:bg-light-navy/50 hover:text-light-slate",
                   )}
                 >
+                  {/* The tab strip is a fixed md:w-40, so long company names need a
+                      short label. Add a case here rather than letting a tab overflow. */}
                   {item.company === "University at Buffalo" ? "UB" : item.company}
                   {selected && (
+                    // A shared `layoutId` makes Framer Motion slide this bar between
+                    // tabs instead of cross-fading it. Dropping the id under reduced
+                    // motion turns that into an instant jump.
                     <motion.span
                       layoutId={reduce ? undefined : "exp-indicator"}
                       className="absolute bottom-0 left-0 h-0.5 w-full bg-accent md:bottom-auto md:left-0 md:top-0 md:h-full md:w-0.5"
@@ -59,6 +77,9 @@ export function Experience() {
 
           {/* Content panel */}
           <div className="min-w-0 flex-1">
+            {/* `mode="wait"` holds the incoming panel until the outgoing one finishes,
+                so the two never overlap mid-transition. Keying on company is what tells
+                AnimatePresence a swap happened. */}
             <AnimatePresence mode="wait">
               <motion.div
                 key={job.company}

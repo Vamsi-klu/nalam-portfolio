@@ -1,5 +1,27 @@
+/**
+ * Global stylesheet and design-token source of truth.
+ *
+ * Tailwind CSS v4 is configured here in CSS rather than in a `tailwind.config.js` —
+ * there is no such file in this project. Two distinct blocks do that work:
+ *
+ *   1. `:root` declares the raw palette as plain CSS custom properties.
+ *   2. `@theme inline` maps those onto Tailwind's theme namespace, which is what
+ *      actually generates utility classes.
+ *
+ * Adding a color needs BOTH steps. A `:root` entry alone gives you something usable via
+ * `var()` but no utility class; a `@theme inline` entry alone skips the indirection that
+ * lets the raw value be referenced from gradients and arbitrary values.
+ *
+ * Everything below the theme blocks is the small set of shared component classes that
+ * the sections compose — reach for these before writing new CSS.
+ *
+ * @see docs/DESIGN-SYSTEM.md
+ */
+
 @import "tailwindcss";
 
+/* Raw palette. Dark navy ramp from deepest background to card surface, slate ramp from
+   body text to headings, and a single teal accent that carries every highlight. */
 :root {
   --dark-navy: #020c1b;
   --navy: #0a192f;
@@ -9,13 +31,24 @@
   --light-slate: #a8b2d1;
   --lightest-slate: #ccd6f6;
   --white: #e6f1ff;
+  /* Also hardcoded in the two canvas components, which draw outside the cascade and
+     cannot read custom properties: `ACCENT` in PipelineParticles.tsx and the RGB triple
+     "0, 199, 183" in AsciiPortrait.tsx. Changing the accent means changing all three. */
   --accent: #00c7b7;
+  /* These last two are deliberately NOT exposed in @theme inline — they have no utility
+     class and are referenced with var() inside arbitrary values, e.g. NavBar's
+     shadow-[0_10px_30px_-10px_var(--navy-shadow)]. */
   --accent-tint: rgba(0, 199, 183, 0.1);
   --navy-shadow: rgba(2, 12, 27, 0.7);
   --background: var(--navy);
   --foreground: var(--slate);
 }
 
+/* Maps the palette into Tailwind's theme so utilities exist. A `--color-navy` entry here
+   is what makes `bg-navy`, `text-navy`, and `border-navy` resolve.
+
+   Note `--color-white-soft`: Tailwind already ships a `white`, so the near-white token is
+   renamed to avoid shadowing it. The font variables come from `next/font` in layout.tsx. */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -32,10 +65,20 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* Anchor navigation is the only navigation on this single-route site, so smooth
+   scrolling applies to every link. Next.js 16 no longer overrides this during router
+   navigations unless <html> carries data-scroll-behavior="smooth" — irrelevant here,
+   since there are no router navigations. */
 html {
   scroll-behavior: smooth;
 }
 
+/* One of three reduced-motion mechanisms in the app, covering everything driven by CSS.
+   Framer Motion components use `useReducedMotion()`, and the canvas components query
+   `window.matchMedia` directly, because neither is reachable from here.
+
+   Clamping to 0.01ms rather than 0 keeps transition/animation end events firing, so any
+   logic waiting on them still completes. */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -61,6 +104,9 @@ body {
   color: var(--white);
 }
 
+/* Standard section shell: centered, capped at a comfortable reading width, with generous
+   vertical rhythm that tightens on mobile. Every section uses this except Hero, which is
+   full-viewport-height and lays itself out with Tailwind utilities. */
 .section {
   max-width: 1000px;
   margin: 0 auto;
@@ -73,6 +119,10 @@ body {
   }
 }
 
+/* Section heading. The teal "/" prefix and the trailing rule are injected by the
+   pseudo-elements below, so the markup stays as bare as `<h2 className="section-title">`.
+   Headings are lowercase throughout the site ("about me", "what's next") — keep that
+   voice. */
 .section-title {
   display: flex;
   align-items: center;
@@ -101,6 +151,9 @@ body {
   margin-left: 0.5rem;
 }
 
+/* Card hover treatment. Pair with `rounded border border-lightest-navy bg-light-navy`
+   for the standard card, as Work and Builds do. The easing curve is the site's house
+   ease-in-out, shared with the button rise. */
 .card-lift {
   transition: transform 0.25s cubic-bezier(0.645, 0.045, 0.355, 1),
     background 0.25s ease, border-color 0.25s ease;
@@ -111,6 +164,8 @@ body {
   background: var(--lightest-navy);
 }
 
+/* Primary action: teal outline on transparent, monospace label, tinted fill and slight
+   rise on hover. `.btn-ghost` below is the secondary — borderless, slate to teal. */
 .btn-accent {
   display: inline-flex;
   align-items: center;
@@ -145,6 +200,8 @@ body {
   color: var(--accent);
 }
 
+/* Blinking caret trailing the Hero headline. Rendered only when motion is allowed, and
+   marked aria-hidden at the call site. */
 .intro-cursor {
   display: inline-block;
   width: 2px;
@@ -161,6 +218,8 @@ body {
   }
 }
 
+/* Teal triangular bullet for skill lists and experience bullets. Uses ::before rather
+   than a list-style marker so the glyph can be colored independently of the text. */
 .skill-bullet::before {
   content: "▹";
   color: var(--accent);

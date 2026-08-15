@@ -1,3 +1,13 @@
+/**
+ * Fixed top navigation, with a full-screen overlay menu on mobile.
+ *
+ * A Client Component because it tracks scroll position and menu state. Links and labels
+ * come from the `nav` array in `site.ts`, shared with `SidebarNav`, so a new section
+ * appears in both navigations from one edit.
+ *
+ * @see docs/ARCHITECTURE.md
+ */
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -10,13 +20,21 @@ export function NavBar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
+  // Fade in the translucent backdrop once the page has moved at all. The 12px threshold
+  // is small enough to feel immediate but avoids flicker from sub-pixel scroll jitter.
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
+    // Seed the state, since the page may load already scrolled (e.g. a deep link to
+    // #work, or a browser restoring scroll position).
     onScroll();
+    // `passive` lets the browser scroll without waiting on this handler.
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Lock background scroll while the mobile overlay is open, otherwise the page scrolls
+  // behind the menu. Cleanup restores the original value on unmount as well as on close,
+  // so the lock can't leak if the component goes away while open.
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => {
@@ -44,6 +62,8 @@ export function NavBar() {
           RN
         </a>
 
+        {/* Desktop links. The `01.` / `02.` numbering is derived from array position,
+            so `nav` order must match the section order in page.tsx. */}
         <ul className="hidden items-center gap-7 md:flex">
           {nav.map((item, i) => (
             <li key={item.id}>
@@ -99,6 +119,10 @@ export function NavBar() {
         </button>
       </nav>
 
+      {/* Mobile overlay. Kept mounted and toggled via opacity so it can transition;
+          `pointer-events-none` plus `aria-hidden` take it out of both hit-testing and
+          the accessibility tree while closed, so it can't trap clicks or be reached by
+          a screen reader. */}
       <div
         className={cn(
           "fixed inset-0 z-40 flex flex-col items-center justify-center gap-10 bg-[rgba(10,25,47,0.97)] backdrop-blur-lg transition-all duration-300 md:hidden",

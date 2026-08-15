@@ -1,3 +1,11 @@
+/**
+ * Bio, current focus chips, skills grid, and the profile photo.
+ *
+ * A Server Component. It renders animated content without becoming a Client Component by
+ * passing server-rendered children into `<Reveal>` — the reference example of that
+ * pattern, described in docs/ARCHITECTURE.md.
+ */
+
 import { Reveal } from "@/components/motion/Reveal";
 import { site } from "@/content/site";
 
@@ -33,6 +41,8 @@ export function About() {
             </div>
           </Reveal>
 
+          {/* Skills are driven by object keys, so adding a category in site.ts adds a
+              column here with no component change. */}
           <Reveal delay={0.25}>
             <div className="mt-10 grid gap-6 sm:grid-cols-2">
               {Object.entries(site.skills).map(([category, skills]) => (
@@ -58,10 +68,18 @@ export function About() {
 
         <Reveal delay={0.15}>
           <div className="group relative mx-auto w-full max-w-[300px] lg:mx-0 lg:ml-auto">
+            {/* Offset teal frame behind the photo that drifts further out on hover. */}
             <div
               className="absolute -inset-0 translate-x-3 translate-y-3 rounded border border-accent transition-transform duration-300 group-hover:translate-x-4 group-hover:translate-y-4"
               aria-hidden
             />
+            {/*
+              Raw <img> rather than next/image is deliberate, and the disable below is
+              load-bearing. This same file is read pixel-by-pixel by AsciiPortrait via
+              getImageData, which needs the unprocessed original — the optimizer's
+              transformed output would break the sampling. Use next/image for any new
+              image that doesn't feed a canvas.
+            */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/profile.jpg"
