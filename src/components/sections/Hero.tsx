@@ -1,44 +1,41 @@
-import { ArrowDown, ArrowUpRight, MapPin } from "lucide-react";
+import Image from "next/image";
+import { ChevronDown } from "lucide-react";
 import { editorial, site } from "@/content/site";
-import { DataSculpture } from "@/components/motion/DataSculpture";
+import { HeroVisual } from "@/components/motion/HeroVisual";
 
 export function Hero() {
   return (
-    <section id="intro" className="hero-shell" aria-labelledby="hero-heading">
+    <section id="intro" className="product-hero" aria-labelledby="hero-heading">
       <div className="hero-copy">
-        <p className="eyebrow hero-intro">
-          <span className="status-dot" aria-hidden="true" />
-          {site.name}
-          <span aria-hidden="true">/</span>
-          {site.title}
-        </p>
+        <p className="hero-identity">{site.name}</p>
         <h1 id="hero-heading">
           {editorial.hero.title}
-          <br />
-          <em>{editorial.hero.accent}</em>
+          <span>{editorial.hero.accent}</span>
         </h1>
         <p className="hero-description">{editorial.hero.description}</p>
         <div className="hero-actions">
           <a className="btn-accent" href="#work">
             {editorial.hero.work}
-            <ArrowUpRight size={16} aria-hidden="true" />
           </a>
-          <a className="btn-ghost" href="#oss">
+          <a className="btn-ghost" href="#about">
             {editorial.hero.source}
-            <ArrowUpRight size={15} aria-hidden="true" />
           </a>
         </div>
-        <p className="hero-location">
-          <MapPin size={12} aria-hidden="true" />
-          {editorial.hero.location}
-          <span aria-hidden="true">·</span>
-          {editorial.hero.footnote}
-        </p>
       </div>
-      <DataSculpture />
-      <a className="hero-scroll" href="#work">
-        <ArrowDown size={16} aria-hidden="true" />
+      <HeroVisual>
+        <Image
+          src="/data-core.webp"
+          alt=""
+          width={1672}
+          height={941}
+          sizes="(max-width: 540px) 142vw, (max-width: 800px) 114vw, 1280px"
+          loading="eager"
+          fetchPriority="high"
+        />
+      </HeroVisual>
+      <a className="hero-scroll-note" href="#work">
         {editorial.hero.scroll}
+        <ChevronDown size={15} aria-hidden="true" />
       </a>
     </section>
   );

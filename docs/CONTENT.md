@@ -1,150 +1,114 @@
 # Content model
 
-Everything a visitor reads lives in `src/content/site.ts`. Components hold layout and
-behavior; they hold no copy. To change the site's text, edit that one file — you should
-almost never need to touch a component to update content.
+Visitor-facing copy lives in `src/content/site.ts`. Components supply layout and
+behavior; content exports supply identity, headings, accessible labels, projects,
+experience, and links. The table below describes the mounted page's current consumers.
 
-## The confidentiality rule
+## Editorial rules
 
-This is the one editorial constraint that overrides everything else, and it is baked
-into the existing copy:
+Keep employer work non-confidential. Meta, Amazon, and University at Buffalo entries
+name technologies and problem areas, without internal metrics, product names, or
+organization details. Do not add specificity that would be inappropriate on a public
+résumé.
 
-> **Employer-confidential work stays off this site.**
+Open-source claims must be checkable. Featured PRs link to public diffs, and counts
+must remain supported by public evidence. Confirm a project's visibility and a demo's
+availability before adding an external action. Descriptions can remain when source
+code is private.
 
-Descriptions of work at Meta, Amazon, and University at Buffalo are deliberately
-high-level. They name the technology and the shape of the problem, never internal
-metrics, product names, org structure, or anything a reader couldn't already infer from
-a public job description. Open-source work is the opposite — every pull request links to
-a public diff anyone can verify.
+## Exports and consumers
 
-When adding or rewriting a bullet, ask whether it would be fine on a public résumé
-handed to a competitor. If not, generalize it until it is. Do not "improve" existing
-copy by adding specificity to employer work; the vagueness is the point.
+| Export | Active consumer |
+| --- | --- |
+| `site` | Hero identity, navigation name, About, Impact, Oss metrics, Contact, CopyEmail, footer, metadata |
+| `editorial` | Section headings, action labels, accessibility text, contact feedback, metadata |
+| `experience` | Experience tabs and panels |
+| `work` | Selected-work stories, excluding the retained `oss-data-stack` entry |
+| `builds` | Server-rendered project cards inside ProjectGallery |
+| `oss` | Contribution summary, upstream names, public PR list, all-contributions link |
+| `nav` | Desktop and mobile NavBar links |
+| `education` | Not currently rendered |
 
-## Exports
+The exported types are `Experience`, `WorkItem`, `BuildItem`, and `OssPr`.
 
-`site.ts` exports six constants and three types.
+## Identity, biography, and metrics
 
-### `site`
+`site.name` appears in Hero, portrait alternative text, the footer, and metadata.
+`shortName` supplies the navigation name. Contact uses `email`, `location`, `github`,
+and `linkedin`; CopyEmail uses the same email value. `domain` supplies the canonical
+and OpenGraph URL through `layout.tsx`.
 
-The `as const` object holding identity, contact details, and top-level copy.
+About renders one paragraph per `about` entry, the `now` label/value pairs, and one
+skill card per category in `skills`. Skill values are arrays of technology names.
+Check long values at narrow widths when updating these arrays.
 
-| Field | Used by |
-|-------|---------|
-| `name`, `shortName`, `title`, `tagline` | `Hero`, `About`, `layout` metadata |
-| `location`, `email`, `phone` | `Contact`, `NavBar` |
-| `github`, `githubUser`, `linkedin`, `domain` | `NavBar`, `Hero`, `Contact`, `Oss` |
-| `resumeUrl` | *nothing yet — see Known gaps* |
-| `heroLines` | `Hero`, cycled through the typing animation |
-| `about` | `About`, one `<p>` per array entry |
-| `now` | `About`, the `label · value` status chips |
-| `skills` | `About`, one column per key |
-| `metrics` | `Impact`, the count-up grid |
+Impact prints each metric's `display` and `label` immediately. There is no count-up.
+The numeric `value` and `suffix` fields remain in the model; keep them consistent
+with `display`. The responsive grid currently fits six facts in six, three, or two
+columns.
 
-`heroLines` is cycled by `react-type-animation`, so keep each line short enough to type
-out in roughly two seconds — the existing lines sit around 40–60 characters. The first
-entry doubles as the static fallback under reduced motion, so make it the strongest one.
+Oss reuses `site.metrics.slice(1, 3)` for opened and merged PR counts. Preserve those
+positions when editing the array, or update that consumer. The retained
+`oss.headline` is not displayed, but keep its figures consistent if changing counts.
 
-`skills` is an object of category → string array. Adding a key adds a column to the
-About grid automatically; the grid is two columns from the `sm` breakpoint up, so an
-even number of categories lays out cleanly.
+## Editorial copy
 
-`metrics` entries carry both a numeric `value` and a `display` string. `Impact` animates
-from zero toward `value` and then snaps to `display` at the end, which is what lets
-`100` render as `100+`. Keep the two consistent — if you change `value`, change
-`display` and `suffix` to match, or the number will visibly jump at the end of the
-count-up. There are six metrics and the grid is `lg:grid-cols-6`, so a count that
-divides evenly into 2, 3, and 6 keeps every row full.
+`editorial` separates presentation copy from biography and project facts:
 
-### `experience`
+- `brand` and `navigation` supply the wordmark, menu labels, contact action, and skip link.
+- `hero` supplies the fixed heading, description, two actions, and scroll link.
+- `work`, `oss`, `builds`, `about`, `experience`, and `impact` supply section copy.
+- `builds.previous` and `builds.next` label gallery controls; `code` and `demo` label
+  the optional project links.
+- `contact` supplies actions plus clipboard success and failure messages.
+- `footer.top` labels the return link; `metadata` supplies titles and descriptions.
 
-Array of `Experience` (`company`, `role`, `period`, `bullets`). Rendered by the tabbed
-`Experience` section, newest first. The tab strip is a fixed `md:w-40`, so long company
-names need a short label — `Experience.tsx` special-cases `"University at Buffalo"` to
-render as `"UB"`. If you add a company with a long name, add a similar shortening there.
+Hero does not read `site.heroLines`. That array and a few earlier editorial keys are
+retained but unused. Changes to them will not change the visible headline.
 
-Bullets are keyed by their own string, so two identical bullets under one company will
-collide as React keys. Keep them distinct.
+## Experience and selected work
 
-### `work`
+Each `experience` entry has `company`, `role`, `period`, and `bullets`. Order is
+newest first. Full company names appear in horizontal tabs, with labelled panels and
+keyboard controls. Keep company names and bullet strings distinct for React keys.
 
-Array of `WorkItem` (`id`, `title`, `org`, `summary`, `stack`, `metrics`). The three
-themed cards under "selected work". `metrics` here are short qualitative pills
-("Streaming + batch", "Quality-first"), not numbers — the numeric ones belong in
-`site.metrics`. Cards render three-up at `lg`, so multiples of three look best.
+Selected work renders the Meta and Amazon entries as large stories with technology
+lists and decorative architecture illustrations. It filters out `oss-data-stack`
+because contributions have a dedicated section. `WorkItem.metrics` remains in the
+model but is not rendered by the current Work component.
 
-### `builds`
+## Personal builds and public links
 
-Array of `BuildItem` (`id`, `title`, `description`, `stack`, optional `github`, optional
-`demo`). Personal projects. Both links are optional and the card conditionally renders
-each icon, so an entry with neither still renders cleanly — it just shows no link
-affordance. Titles render in monospace and are treated as repo names, so keep them
-lowercase and hyphenated to match the actual repo.
+A `BuildItem` has a unique `id`, `title`, one-sentence `description`, `stack`, and
+optional `github` and `demo` URLs. The gallery shows projects with at least one link
+first, preserving order within each group. It retains each item's original array
+index for its illustration; reordering the content array or adding a project may
+therefore require an illustration update in Builds.
 
-### `oss`
+Current public source links are nl2sql, YTSummary-Agent, test-agent-skills, and
+retail-ai-agent. Jobkanban and prompt-optimizer keep their descriptions without source
+links because their repositories are private. The unavailable Jobkanban demo link
+has also been removed. A project without links renders without a link action.
 
-The open-source section: `headline`, `summary`, `upstreams` (project name chips), `prs`
-(an array of `OssPr` — `title`, `repo`, `url`), and `allPrsUrl` (a GitHub search URL
-scoped to the author).
+Before adding or restoring a link, check it as an unauthenticated visitor. Access
+through the owner's GitHub account does not establish that a portfolio visitor can
+open it.
 
-Every PR must link to a real public pull request. This section is the site's central
-credibility claim — "I don't just use the data stack, I fix it" — and it only works
-because each item is independently verifiable. Six is the current count and it fits the
-card without scrolling.
+## Open-source contributions
 
-The counts in `oss.headline` ("100+ PRs · 20+ merged") and the OSS entries in
-`site.metrics` describe the same underlying facts in two places. Update them together
-or they will drift apart.
+`oss.summary` introduces the section, `upstreams` lists project names, and `prs`
+contains `title`, `repo`, and `url` for each contribution. Six public PR links are
+currently displayed. Verify the author, title, repository, and status when changing
+an entry. `allPrsUrl` points to an author-scoped GitHub search.
 
-### `nav`
+## Navigation and retained fields
 
-`as const` array of `{ id, label }`. Drives both `NavBar` and `SidebarNav`, and each
-`id` must match the `id` attribute of the corresponding `<section>` in the page for
-anchor links and scroll-spy to work.
+Menu order follows the page: home, work, open source, builds, about, experience,
+contact. Each `nav.id` must match its section anchor. Desktop navigation uses the
+wordmark for home and a separate contact action; the mobile dialog lists all entries.
+Impact is deliberately absent. The old SidebarNav is not mounted.
 
-`impact` is a rendered section that is deliberately not in `nav`, so it has no nav link
-and the sidebar doesn't highlight while you scroll past it. If you want it tracked, add
-`{ id: "impact", label: "impact" }` between `about` and `experience`.
-
-Ordering matters twice over: `NavBar` numbers the links `01.`, `02.`, … from the array
-index, so the array order should match the visual order of sections in `page.tsx`.
-
-### `education`
-
-Array of `{ degree, school, period }`. **Currently unused** — no component imports it.
-It's available if you add an education section.
-
-## Adding an entry
-
-Adding a project is representative of the whole pattern:
-
-```ts
-export const builds: BuildItem[] = [
-  // ...
-  {
-    id: "my-project",              // unique; used as the React key
-    title: "my-project",           // matches the repo name, lowercase
-    description: "One sentence. What it does and what's interesting about it.",
-    stack: ["Python", "FastAPI"],  // 2–4 entries; renders as a monospace footer row
-    github: "https://github.com/Vamsi-klu/my-project",
-    demo: "https://my-project.vercel.app",  // omit if there isn't one
-  },
-];
-```
-
-No component change is needed. The same holds for experience, work, and OSS entries —
-add to the array and the section renders it.
-
-## Known gaps
-
-Two dangling references currently sit in the content layer:
-
-- `site.resumeUrl` points at `/resume.pdf`, but there is no `public/resume.pdf` and no
-  component reads the field. Either add the file and a link, or drop the field.
-- `public/profile-photo.jpg` exists but nothing references it. Only `/profile.jpg` is
-  used, by both `About` and `AsciiPortrait`.
-
-If you replace `public/profile.jpg`, note that `AsciiPortrait` samples its pixels to
-build the ASCII art. A high-contrast, centered, head-and-shoulders shot converts well;
-a busy or low-contrast image turns to mush because the brightness ramp has only ten
-steps to work with.
+`education` and `site.resumeUrl` remain unused. There is no `public/resume.pdf`, so do
+not add a résumé action without supplying the file. The active portrait is
+`public/profile.jpg`; `profile-photo.jpg` and the legacy canvas portrait are not used
+by the mounted page. Hero-art provenance is documented in [visual assets](ASSETS.md).

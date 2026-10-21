@@ -16,9 +16,11 @@ export function Experience() {
   ) {
     let next: number;
     switch (event.key) {
+      case "ArrowRight":
       case "ArrowDown":
         next = (index + 1) % experience.length;
         break;
+      case "ArrowLeft":
       case "ArrowUp":
         next = (index - 1 + experience.length) % experience.length;
         break;
@@ -42,86 +44,81 @@ export function Experience() {
       className="section experience-section"
       aria-labelledby="experience-title"
     >
-      <div className="section-topline">
-        <p className="eyebrow">{editorial.experience.eyebrow}</p>
+      <div className="section-shell experience-shell">
+        <Reveal>
+          <header className="experience-heading">
+            <p className="eyebrow">{editorial.experience.eyebrow}</p>
+            <h2 id="experience-title" className="display-heading">
+              {editorial.experience.title}
+              <br />
+              <em>{editorial.experience.accent}</em>
+            </h2>
+            <p className="experience-intro">{editorial.experience.note}</p>
+          </header>
+        </Reveal>
+
+        <Reveal>
+          <div className="experience-card">
+            <div
+              role="tablist"
+              aria-labelledby="experience-title"
+              aria-orientation="horizontal"
+              className="experience-tabs"
+            >
+              {experience.map((item, index) => (
+                <button
+                  key={item.company}
+                  ref={(node) => {
+                    tabRefs.current[index] = node;
+                  }}
+                  type="button"
+                  role="tab"
+                  id={`exp-tab-${index}`}
+                  aria-selected={active === index}
+                  aria-controls={`exp-panel-${index}`}
+                  tabIndex={active === index ? 0 : -1}
+                  onClick={() => setActive(index)}
+                  onKeyDown={(event) => handleKeyDown(event, index)}
+                  className={cn(
+                    "experience-tab",
+                    active === index && "is-active",
+                  )}
+                >
+                  {item.company}
+                </button>
+              ))}
+            </div>
+
+            <div className="experience-panels">
+              {experience.map((job, index) => (
+                <div
+                  key={job.company}
+                  role="tabpanel"
+                  id={`exp-panel-${index}`}
+                  aria-labelledby={`exp-tab-${index}`}
+                  aria-hidden={active !== index}
+                  inert={active !== index}
+                  tabIndex={0}
+                  className="experience-panel"
+                >
+                  <div className="experience-job-heading">
+                    <div>
+                      <h3>{job.company}</h3>
+                      <p className="experience-role">{job.role}</p>
+                    </div>
+                    <p className="experience-period">{job.period}</p>
+                  </div>
+                  <ul>
+                    {job.bullets.map((bullet) => (
+                      <li key={bullet}>{bullet}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
       </div>
-      <Reveal>
-        <div className="experience-heading">
-          <h2 id="experience-title" className="display-heading">
-            {editorial.experience.title}
-            <br />
-            <em>{editorial.experience.accent}</em>
-          </h2>
-          <p>{editorial.experience.note}</p>
-        </div>
-      </Reveal>
-
-      <Reveal>
-        <div className="experience-layout">
-          <div
-            role="tablist"
-            aria-labelledby="experience-title"
-            aria-orientation="vertical"
-            className="experience-tabs"
-          >
-            {experience.map((item, index) => (
-              <button
-                key={item.company}
-                ref={(node) => {
-                  tabRefs.current[index] = node;
-                }}
-                type="button"
-                role="tab"
-                id={`exp-tab-${index}`}
-                aria-selected={active === index}
-                aria-controls={`exp-panel-${index}`}
-                tabIndex={active === index ? 0 : -1}
-                onClick={() => setActive(index)}
-                onKeyDown={(event) => handleKeyDown(event, index)}
-                className={cn(
-                  "experience-tab",
-                  active === index && "is-active",
-                )}
-              >
-                <span className="experience-index" aria-hidden="true">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <span className="experience-company">
-                  <strong>{item.company}</strong>
-                  <span>{item.period}</span>
-                </span>
-                <span className="experience-tab-arrow" aria-hidden="true">
-                  ↗
-                </span>
-              </button>
-            ))}
-          </div>
-
-          <div className="experience-panels">
-            {experience.map((job, index) => (
-              <div
-                key={job.company}
-                role="tabpanel"
-                id={`exp-panel-${index}`}
-                aria-labelledby={`exp-tab-${index}`}
-                tabIndex={0}
-                aria-hidden={active !== index}
-                inert={active !== index}
-                className="experience-panel"
-              >
-                <p className="eyebrow">{job.company}</p>
-                <h3>{job.role}</h3>
-                <p className="experience-period">{job.period}</p>
-                <ul>
-                  {job.bullets.map((bullet) => (
-                    <li key={bullet}>{bullet}</li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </div>
-      </Reveal>
     </section>
   );
 }

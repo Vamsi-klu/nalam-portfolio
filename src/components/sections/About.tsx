@@ -9,12 +9,18 @@ export function About() {
       className="section profile-section"
       aria-labelledby="about-title"
     >
-      <div className="section-topline">
-        <p className="eyebrow">{editorial.about.eyebrow}</p>
-        <span className="profile-location">{site.location}</span>
-      </div>
+      <Reveal>
+        <header className="profile-heading">
+          <p className="eyebrow">{editorial.about.eyebrow}</p>
+          <h2 id="about-title" className="display-heading">
+            {editorial.about.title}
+            <br />
+            <em>{editorial.about.accent}</em>
+          </h2>
+        </header>
+      </Reveal>
 
-      <div className="profile-layout">
+      <div className="profile-spotlight">
         <Reveal className="profile-portrait">
           <figure>
             <div className="profile-photo-frame">
@@ -28,58 +34,43 @@ export function About() {
                 loading="lazy"
                 decoding="async"
               />
-              <span className="profile-photo-corner" aria-hidden="true">
-                ✳
-              </span>
             </div>
-            <figcaption>
-              <span>{editorial.about.portrait}</span>
-              <span aria-hidden="true">↗</span>
-            </figcaption>
+            <figcaption>{editorial.about.portrait}</figcaption>
           </figure>
         </Reveal>
-
-        <div className="profile-copy">
-          <Reveal>
-            <h2 id="about-title" className="display-heading">
-              {editorial.about.title}
-              <br />
-              <em>{editorial.about.accent}</em>
-            </h2>
-          </Reveal>
-          <div className="profile-bio">
-            {site.about.map((paragraph, index) => (
-              <Reveal key={paragraph} delay={index * 0.04}>
-                <p>{paragraph}</p>
-              </Reveal>
-            ))}
-          </div>
-          <Reveal>
-            <dl className="profile-now">
-              {site.now.map((item) => (
-                <div key={item.label}>
-                  <dt>{item.label}</dt>
-                  <dd>{item.value}</dd>
-                </div>
-              ))}
-            </dl>
-          </Reveal>
+        <div className="profile-bio">
+          {site.about.map((paragraph, index) => (
+            <Reveal key={paragraph} delay={index * 0.05}>
+              <p>{paragraph}</p>
+            </Reveal>
+          ))}
         </div>
       </div>
 
       <Reveal>
-        <div className="profile-skills">
-          <h3 className="eyebrow">{editorial.about.skills}</h3>
-          <dl className="profile-skill-grid">
-            {Object.entries(site.skills).map(([category, skills]) => (
-              <div key={category}>
-                <dt>{category}</dt>
-                <dd>{skills.join(" · ")}</dd>
-              </div>
-            ))}
-          </dl>
-        </div>
+        <dl className="profile-focus">
+          {site.now.map((item) => (
+            <div key={item.label}>
+              <dt>{item.label}</dt>
+              <dd>{item.value}</dd>
+            </div>
+          ))}
+        </dl>
       </Reveal>
+
+      <div className="profile-skills">
+        <Reveal>
+          <h3>{editorial.about.skills}</h3>
+        </Reveal>
+        <dl className="profile-skill-grid">
+          {Object.entries(site.skills).map(([category, skills]) => (
+            <div key={category}>
+              <dt>{category}</dt>
+              <dd>{skills.join(" · ")}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
     </section>
   );
 }

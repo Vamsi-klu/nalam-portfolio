@@ -1,21 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowUpRight, Menu, X } from "lucide-react";
-import { editorial, nav } from "@/content/site";
-import { cn } from "@/lib/utils";
+import { ChevronRight, Menu, X } from "lucide-react";
+import { editorial, nav, site } from "@/content/site";
 
 export function NavBar() {
-  const [scrolled, setScrolled] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const destination = useRef<string | null>(null);
   const [open, setOpen] = useState(false);
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
   useEffect(() => {
     if (!open) return;
     const previous = document.body.style.overflow;
@@ -25,7 +18,7 @@ export function NavBar() {
     };
   }, [open]);
   useEffect(() => {
-    const query = window.matchMedia("(min-width: 901px)");
+    const query = window.matchMedia("(min-width: 801px)");
     const onChange = () => {
       if (query.matches) dialog.current?.close();
     };
@@ -34,16 +27,16 @@ export function NavBar() {
   }, []);
   const close = () => dialog.current?.close();
   return (
-    <header className={cn("site-header", scrolled && "is-scrolled")}>
+    <header className="site-header">
       <nav className="main-nav" aria-label={editorial.navigation.label}>
         <a
           href="#intro"
           className="wordmark"
           aria-label={editorial.navigation.home}
         >
-          {editorial.brand.slice(0, -1)}
-          <span>.</span>
+          {editorial.brand}
         </a>
+        <span className="brand-name">{site.shortName}</span>
         <ul className="desktop-nav">
           {nav
             .filter((item) => item.id !== "intro" && item.id !== "contact")
@@ -55,7 +48,6 @@ export function NavBar() {
         </ul>
         <a href="#contact" className="nav-contact">
           {editorial.navigation.contact}
-          <ArrowUpRight size={15} aria-hidden="true" />
         </a>
         <button
           ref={trigger}
@@ -104,7 +96,7 @@ export function NavBar() {
         </button>
         <nav aria-label={editorial.navigation.label}>
           <ul>
-            {nav.map((item, index) => (
+            {nav.map((item) => (
               <li key={item.id}>
                 <a
                   href={`#${item.id}`}
@@ -113,11 +105,8 @@ export function NavBar() {
                     close();
                   }}
                 >
-                  <span aria-hidden="true">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
                   {item.label}
-                  <ArrowUpRight size={20} aria-hidden="true" />
+                  <ChevronRight size={20} aria-hidden="true" />
                 </a>
               </li>
             ))}

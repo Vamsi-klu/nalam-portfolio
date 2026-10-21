@@ -46,9 +46,14 @@ Test every deployed revision in a real browser:
 
 - Check desktop and mobile layouts, long-page scrolling, and horizontal overflow.
 - Follow the hero and navigation anchors; open and close the mobile menu with both
-  pointer and keyboard, including Escape and focus restoration.
-- Use the Experience tabs with Up/Down, Home, and End keys.
-- Pause and resume the sculpture, then repeat with reduced motion enabled.
+  pointer and keyboard, including Escape, trigger focus restoration, and destination
+  heading focus after selection.
+- Use the Experience tabs with arrow keys, Home, and End; check that only the active
+  panel is reachable and the card does not jump in height.
+- Scroll the personal-project gallery by touch, keyboard, and its previous/next
+  controls; check both ends of the track.
+- Scroll through the hero and inspect the data-core image transform, then repeat with
+  reduced motion enabled and confirm the image stays still.
 - Check the page with JavaScript disabled for visible content and usable links.
 - Test email copying and its failure feedback, mail/social links, public PRs, and
   personal-project links. Keep unavailable destinations out of the interface.

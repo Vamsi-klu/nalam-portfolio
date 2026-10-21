@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Check, Copy } from "lucide-react";
 import { editorial, site } from "@/content/site";
 
 export function CopyEmail() {
@@ -17,11 +18,15 @@ export function CopyEmail() {
 
   return (
     <div className="contact-copy">
-      <button type="button" onClick={copyEmail}>
+      <button className="btn-ghost" type="button" onClick={copyEmail}>
         {status === "copied"
           ? editorial.contact.copied
           : editorial.contact.copy}
-        <span aria-hidden="true">{status === "copied" ? "✓" : "+"}</span>
+        {status === "copied" ? (
+          <Check size={18} aria-hidden="true" />
+        ) : (
+          <Copy size={18} aria-hidden="true" />
+        )}
       </button>
       <span
         className={status === "error" ? "contact-copy-error" : "sr-only"}
