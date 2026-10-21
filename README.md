@@ -3,6 +3,7 @@
 A personal portfolio for a Data Engineer, with an image-led black hero, white and
 silver sections, blue actions, and public open-source contributions. Native scrolling
 progresses through a pinned introduction, followed by illustrated work stories.
+Original artwork depicts data pipelines, streaming workflows, and lakehouse layers.
 The production URL is
 [nalam-portfolio.vercel.app](https://nalam-portfolio.vercel.app).
 

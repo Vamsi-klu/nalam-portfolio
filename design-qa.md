@@ -130,3 +130,28 @@ screenshots could make those cards more specific in a future content update (P3)
 - [x] Record residual limitations without claiming pixel identity or full WCAG certification.
 - [x] Verify the new Vercel preview before production publication.
 - [ ] Verify the production revision before release handoff; this report is the pre-release snapshot.
+
+## Data-engineering artwork update — 2026-10-21
+
+Replaced all four conceptual hero and work-story images with recognizable dataflows:
+source databases, transformation nodes, streaming records, and lakehouse table
+layers. The mobile hero has its own portrait composition; the streaming image uses
+a 60% horizontal crop position to retain its queues, gates, and output table.
+The combined WebP assets are 426,956 bytes, 32.7% smaller than the replaced set.
+Exact prompts, source paths, and final dimensions are in [visual assets](docs/ASSETS.md).
+
+The optimized local build passed the interaction audit in
+`output/playwright/data-art-local-audit.json`, including image-source selection at
+320, 390, 768, 1024, and 1440px, navigation, tabs, gallery controls, clipboard,
+mobile navigation, reduced motion, and no-JavaScript content. The only local console
+error was the expected Vercel Analytics endpoint 404. Build and TypeScript pass;
+lint reports only the documented existing `AsciiPortrait.tsx` error.
+
+Independent visual inspection at 1440×1000, 390×844, 375×667, 320×568, and 768×1024
+confirmed decoded images, recognizable subjects, clear crops, and no overflow or
+application errors. Evidence is in `output/playwright/de-image-production-visual-result.json`
+(an optimized local production build, not a Vercel deployment).
+`output/playwright/de-images-manual-a11y.json` records 99 passing text-contrast samples
+with none skipped. The hero story's minimum sampled contrast is 5.285:1 on desktop
+and 5.300:1 on mobile. No actionable P0/P1/P2 visual issues remain in this local pass.
+Each subsequent Vercel deployment still requires browser verification.

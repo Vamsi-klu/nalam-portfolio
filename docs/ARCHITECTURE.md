@@ -36,15 +36,16 @@ photo supplies the social preview image, and `public/brand.svg` supplies the ico
 | CopyEmail | Clipboard interaction and accessible success/error feedback |
 
 Hero stays a Server Component and uses `getImageProps` to build an eager, high-priority
-`<picture>`. Screens up to 800px wide receive the portrait `/hero-mobile.webp`;
-wider screens receive `/data-core.webp`. The browser selects an optimized source
+`<picture>`. Screens up to 800px wide receive the portrait `/data-pipeline-mobile.webp`;
+wider screens receive `/data-pipeline-hero.webp`. The browser selects an optimized source
 for the active art direction. `HeroVisual` receives the image and both copy stages
 as server-rendered children.
 
-Work maps `streaming-analytics` and `aws-data-platform` to `/streaming-flow.webp` and
-`/platform-architecture.webp`. Each story has a responsive Next Image above its
-high-level summary and technology list. All four images are decorative conceptual
-artwork; prompts and conversion details are in [visual assets](ASSETS.md). About
+Work maps `streaming-analytics` and `aws-data-platform` to `/streaming-pipeline.webp` and
+`/lakehouse-architecture.webp`. Each story has a responsive Next Image above its
+high-level summary and technology list. All four images depict conceptual dataflows:
+databases, tabular datasets, transformation stages, and analytics outputs. They are
+decorative artwork; prompts and conversion details are in [visual assets](ASSETS.md). About
 renders the real profile photo at `/profile.jpg`, with explicit dimensions and lazy
 loading.
 

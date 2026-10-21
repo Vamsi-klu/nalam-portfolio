@@ -5,8 +5,8 @@ import { editorial, work } from "@/content/site";
 import "@/components/sections/work.css";
 
 const artwork: Record<string, string> = {
-  "streaming-analytics": "/streaming-flow.webp",
-  "aws-data-platform": "/platform-architecture.webp",
+  "streaming-analytics": "/streaming-pipeline.webp",
+  "aws-data-platform": "/lakehouse-architecture.webp",
 };
 
 export function Work() {

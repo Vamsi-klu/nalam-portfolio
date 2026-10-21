@@ -6,20 +6,20 @@ import "@/components/sections/hero.css";
 
 export function Hero() {
   const { props: desktop } = getImageProps({
-    src: "/data-core.webp",
+    src: "/data-pipeline-hero.webp",
     alt: "",
     width: 1672,
     height: 941,
-    sizes: "(max-width: 800px) 100vw, 1120px",
+    sizes: "(min-width: 1600px) 1280px, (max-width: 800px) 100vw, 1120px",
     loading: "eager",
     fetchPriority: "high",
   });
   const { props: mobile } = getImageProps({
-    src: "/hero-mobile.webp",
+    src: "/data-pipeline-mobile.webp",
     alt: "",
     width: 1122,
     height: 1402,
-    sizes: "(max-width: 540px) 100vw, 600px",
+    sizes: "(max-width: 540px) 110vw, 600px",
     loading: "eager",
     fetchPriority: "high",
   });

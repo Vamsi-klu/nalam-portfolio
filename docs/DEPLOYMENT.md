@@ -52,7 +52,7 @@ Test every deployed revision in a real browser:
   panel is reachable and the card does not jump in height.
 - Scroll the personal-project gallery by touch, keyboard, and its previous/next
   controls; check both ends of the track.
-- Scroll through the hero and inspect the data-core image transform, then repeat with
+- Scroll through the hero and inspect the data-pipeline image transform, then repeat with
   reduced motion enabled and confirm the image stays still.
 - Check the page with JavaScript disabled for visible content and usable links.
 - Test email copying and its failure feedback, mail/social links, public PRs, and

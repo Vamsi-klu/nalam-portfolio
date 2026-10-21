@@ -1,85 +1,131 @@
 # Visual assets
 
-The hero and selected-work artwork was created for this portfolio with the built-in
-OpenAI image-generation tool. These are original conceptual data-platform renders.
-They do not document employer hardware or infrastructure, and contain no borrowed
-Apple product imagery or logos. The original `public/profile.jpg` remains the portrait
-source. Personal project illustrations are decorative CSS compositions.
+The four hero and work-story images are original conceptual data-engineering artwork
+created with the built-in OpenAI image-generation tool. They depict databases,
+tabular datasets, streaming records, transformations, and analytics outputs. These
+are illustrative dataflows, not documentation of an employer’s infrastructure.
+The artwork contains no borrowed brand imagery or logos.
 
 Hero uses `getImageProps` inside a `<picture>` to select the portrait image at widths
 up to 800px and the landscape image above that breakpoint. Work uses responsive
-Next Image components. All conceptual artwork is decorative, with empty alternative
-text.
+Next Image components. These images are decorative, with empty alternative text.
+The original `public/profile.jpg` remains the portrait source; personal-project
+illustrations are CSS compositions.
 
-## Desktop hero: data-core
+All four selected PNGs were converted with Sharp to WebP at quality 88 and effort 6.
+Conversion preserves dimensions and aspect ratio without resizing, cropping, or
+stretching. The source paths below identify local originals; only the WebP assets
+in `public/` are needed by the application. Manifests under `output/imagegen/` are
+ignored local artifacts.
 
-- Output: `public/data-core.webp`, 1672 × 941, 201920 bytes.
-- Provenance: original generation using the built-in image tool.
-- Conversion: generated PNG to WebP using Sharp, quality 88.
+| Asset | Dimensions | Bytes |
+| --- | --- | --- |
+| `public/data-pipeline-hero.webp` | 1672 × 941 | 112048 |
+| `public/data-pipeline-mobile.webp` | 1122 × 1402 | 89002 |
+| `public/streaming-pipeline.webp` | 1672 × 941 | 93938 |
+| `public/lakehouse-architecture.webp` | 1672 × 941 | 131968 |
 
-Exact generation prompt:
+## Desktop hero
+
+- Output: `public/data-pipeline-hero.webp`, 1672 × 941, 112048 bytes.
+- Manifest: `output/imagegen/data-pipeline-hero-manifest.json`.
+
+### Generation
+
+- Mode: `generate`.
+- Original PNG: `/root/.codex/generated_images/01a15c68-b690-70d3-89a1-af8dfaeda740/exec-94f5a50f-b8ee-460b-bc8a-7c03b87e912b.png` (1672 × 941, 1387620 bytes).
+- Reference images: none.
+
+Exact prompt:
 
 ```text
-Use case: stylized-concept. Asset type: original cinematic hero artwork for a high-end data engineer portfolio with Apple product launch quality. Create an exceptionally refined photorealistic 3D studio render of an engineered data core: three wide square plates of smoked optical glass and brushed dark titanium suspended in an exploded stack, precise beveled edges, a small luminous azure-blue processor within the central plate, thousands of very fine silver micro-circuit traces visible through the glass, a few elegant violet and electric-blue light paths passing between the layers. Camera at a low three-quarter isometric angle, dramatic almost-black seamless studio background, product centered with generous black negative space around and above, width spans most of composition, strong edge highlights and realistic light refraction, subtle floor reflection. Restrained colors: black, titanium, silver, cool white, electric blue, slight violet. This should look like an immaculately art-directed premium chip product photograph, physically plausible, quiet, minimal, precise, spectacular materials and lighting. Wide landscape 16:9 composition. No text, no letters, no logos, no watermark, no people, no planets, no spheres, no neon cyberpunk clutter, no UI, no generic background gradients.
+Use case: stylized-concept.
+Asset type: original landscape hero artwork for an elegant data engineer portfolio.
+Primary request: portray DATA ENGINEERING as a beautifully crafted three-dimensional data pipeline. On a seamless pure-black studio stage, a compact isometric system connects recognizable database cylinders and small stacks of tabular data sheets on the left, a branching directed workflow of translucent square transformation nodes in the center, and a refined columnar data warehouse with a small clean analytics bar arrangement on the right. Thin luminous blue paths carry evenly spaced rectangular data records through the stages, visibly joining and splitting before resolving into ordered rows. Make the connections and organization the subject: a clear visual journey from raw data to trusted analytics.
+Style: premium photorealistic 3D editorial illustration, precise optical glass, frosted pale-blue surfaces, restrained brushed silver edges, exquisite soft edge lighting and subtle floor reflections. Immaculate composition, sophisticated and cinematic, readable at a glance. The components should feel like sculptural data concepts, not electronic devices.
+Composition: wide 16:9 image, whole pipeline centered across the middle 75 percent of the width and middle 60 percent of the height, black breathing room around every edge, low three-quarter perspective that clearly reveals cylinders, table rows, branching connectors, and final structured data. Dark lower margin supports page text outside the artwork. Keep the central network interesting when enlarged. Restrained black, silver, cool white and azure blue palette. Opaque black background.
+Constraints: no CPU, no processor, no circuit boards or microchips, no computer hardware, no server racks, no buildings, no mechanical engine, no fiber-optic hair, no people. No text, letters, numbers, logos, watermark, screenshots, UI windows, fake code, or brand assets.
 ```
 
-## Cinematic asset batch
+## Mobile hero
 
-Generated with `built-in image_gen`; manifest recorded at `2026-10-21T03:45:41.560Z`.
-The local manifest is `output/playwright/cinematic-assets.json` (an ignored artifact).
-The source PNG paths below identify local originals; the WebP files in `public/`
-are the application assets. All three conversions use Sharp, WebP quality 88 and
-effort 6, preserving the original dimensions without resizing or cropping.
+- Output: `public/data-pipeline-mobile.webp`, 1122 × 1402, 89002 bytes.
+- Manifest: `output/imagegen/data-pipeline-hero-manifest.json`.
 
-### Mobile hero: hero-mobile
+### Edit
 
-- Output: `public/hero-mobile.webp`, 1122 × 1402, 142678 bytes.
-- Original PNG: `/root/.codex/generated_images/01a15c69-37a0-78b1-942b-5c899da0f076/exec-20a42e32-dd58-4045-aef9-04617cefc89a.png` (1122 × 1402).
 - Mode: `edit`.
-- Reference: `/root/ram/coding/nalam-portfolio/public/data-core.webp`.
+- Original PNG: `/root/.codex/generated_images/01a15c68-b690-70d3-89a1-af8dfaeda740/exec-036d84c2-55e1-4b56-9724-1b97b2555058.png` (1122 × 1402, 1175079 bytes).
+- Reference: `/root/.codex/generated_images/01a15c68-b690-70d3-89a1-af8dfaeda740/exec-94f5a50f-b8ee-460b-bc8a-7c03b87e912b.png`.
 
 Exact prompt:
 
 ```text
 Use case: precise-object-edit.
-Asset type: original mobile hero artwork for a premium data engineer portfolio.
-Input image 1 is the EDIT TARGET. Preserve the exact visual identity of this glass-and-titanium data core: three precision square plates in an exploded vertical stack, brushed dark titanium edges, smoked optical glass, intricate silver micro-circuit traces, a luminous ice-blue central processor and restrained blue-violet light connections. Preserve photorealistic material detail and controlled studio lighting.
-Primary request: recompose this same object for a PORTRAIT 4:5 image. Move the camera farther back and slightly higher so all THREE separated plates fit cleanly in a narrower centered silhouette with clearly readable vertical gaps. The full object must remain uncropped, approximately 82 percent of the frame width, occupying the middle 65 percent of the frame height. Generous seamless near-black negative space above and below, subtle dark floor reflection. Designed to remain legible in a 390 by 420 mobile hero region. Do not simply crop the wide image.
-Keep the object, black/titanium/silver/ice-blue palette, craftsmanship and physical realism; change only framing, camera distance and vertical arrangement needed for the portrait composition. No text, no letters, no logos, no watermark, no people, no planets, no spheres, no UI, no fake code, no extra objects. Opaque black background.
+Asset type: portrait mobile hero artwork for the same data engineer portfolio.
+Input image1 is the EDIT TARGET. Preserve its data-engineering subject, optical-glass and brushed-silver materials, azure rectangular data records, database cylinders, table-sheet stacks, transformation cubes, columnar warehouse and analytics bars, pure-black seamless studio with restrained reflections and elegant lighting.
+Primary request: RECOMPOSE the pipeline as a compact VERTICAL top-to-bottom journey in a portrait 4:5 canvas, not a crop of the landscape artwork. At upper left and upper right place two modest source database/table groups; in the middle, thin blue paths flow down through a small branching network of three to four frosted transformation nodes; at bottom center the paths converge into one larger ordered warehouse cylinder with a small refined bar-chart sculpture beside it. Maintain visible separation and clean logical links between stages. Only one output warehouse. Low three-quarter perspective, all elements fully visible and uncropped, main forms within the central80percent width and middle70percent height. Generous true-black breathing room above, below and beside the complete system so it can blend into a black webpage. Recognizable data workflow at phone size, exceptionally polished photorealistic3D conceptual art.
+No words, text, letters, digits, logos, watermark, UI windows, screenshots, fake code, people, processorchips, circuitboards, serverracks, machines, or buildings. Keep the background opaque pure black and keep the subject unmistakably a data-engineering pipeline.
 ```
 
-### Streaming work story: streaming-flow
+## Streaming work story
 
-- Output: `public/streaming-flow.webp`, 1672 × 941, 168794 bytes.
-- Original PNG: `/root/.codex/generated_images/01a15c69-37a0-78b1-942b-5c899da0f076/exec-ceba2186-bc8a-4083-82d6-4519d17a166e.png` (1672 × 941).
+- Output: `public/streaming-pipeline.webp`, 1672 × 941, 93938 bytes.
+- Manifest: `output/imagegen/streaming-pipeline-manifest.json`.
+
+### Step 1: Generation
+
 - Mode: `generate`.
-- Reference images: none; generated from the prompt.
+- Original PNG: `/root/.codex/generated_images/01a15c6a-470c-7243-912f-d302d472ab8c/exec-1e1ec4ac-c632-414d-96b9-89159f877e2e.png` (1672 × 941, 1527064 bytes).
+- Reference images: none.
 
 Exact prompt:
 
 ```text
 Use case: stylized-concept.
-Asset type: original cinematic 16:9 wide feature artwork for a premium data engineering portfolio.
-Scene: seamless pure-black studio with subtle reflective floor and carefully controlled product lighting.
-Subject: luminous ice-blue fiber-optic streams sweep elegantly from the LEFT through the black space into a single precision brushed-titanium and smoked-glass processing core at RIGHT-CENTER. The streams are long fine physical glass fibers with a few restrained violet highlights, converging and bending in a graceful controlled arc. The core is an original low, precise engineered form with beveled metal edges, transparent smoked optical surfaces and an ice-blue inner light, small enough to leave the visual flow clearly readable.
-Style: exceptionally refined photorealistic 3D product render, immaculate material realism, extremely fine brushed metal grain, real glass refraction, crisp white edge highlights, spectacular but disciplined lighting. The composition should communicate fast reliable streaming data without any literal diagram. Generous negative black space toward the upper left and upper edge. Landscape 16:9 composition, no cropping of the core.
-Constraints: original design with no borrowed branded products. No words, no letters, no numbers, no logos, no watermark, no UI, no screens, no fake code, no labels, no charts, no people, no cyberpunk clutter. Restrained palette of black, titanium, silver and ice blue with very slight violet. Opaque background.
+Asset type: original landscape 16:9 feature artwork for a premium data-engineering portfolio.
+Scene/backdrop: seamless pure-black studio with a subtle dark reflective floor.
+Subject: a clearly understandable streaming DATA PIPELINE rendered as a refined three-dimensional information sculpture. Small individual translucent event-record cards arrive in three neat streams, each card visibly subdivided into a few simple fields using embossed bars rather than writing. These streams enter exactly THREE distinct upright frosted-glass broker/partition containers holding tidy stacks of event cards. Thin luminous blue connections then lead through TWO open glass transform-stage frames, where the record cards visibly become uniform, and converge into a clean structured output: one precise rectangular table-like lattice of aligned rows and columns. Keep the records, three partition containers, connecting paths, transform stages, and ordered output visually distinguishable at a glance.
+Composition/framing: wide 16:9 view, restrained elevated three-quarter camera. Arrange the complete connected pipeline compactly around the CENTER of the canvas, with all essential stages inside the central 65 percent of image width and central 70 percent of image height. Incoming records may gently trail beyond that area. The main three-node pipeline and structured output must remain meaningful in a centered mobile crop. Clear generous gaps between stages, balanced negative black space around the sculpture, no labels needed to read the progression.
+Style/medium: immaculate photorealistic premium 3D studio visualization, realistic frosted and clear optical glass, thin brushed-silver rims, restrained luminous azure-blue records and connections, clean white edge highlights, subtle physically plausible reflections. Sophisticated, calm, dimensional and precise. Silver, glass, black and restrained blue only.
+Constraints: communicate data engineering through records, partitions, transformations and structured data. No CPU, processor, chip, motherboard, circuit-board, micro-circuit traces, hardware chassis, server rack, engine, fiber-optic cable bundles, planetary objects or spheres. No text, letters, numbers, labels, logos, watermark, UI screens, dashboards, fake software screenshot or code. No decorative rainbow or cyberpunk clutter. Opaque black background.
 ```
 
-### Data-platform work story: platform-architecture
+### Step 2: Edit
 
-- Output: `public/platform-architecture.webp`, 1672 × 941, 120578 bytes.
-- Original PNG: `/root/.codex/generated_images/01a15c69-37a0-78b1-942b-5c899da0f076/exec-44bbb3f6-ef49-4296-8dc6-c5f5cd748609.png` (1672 × 941).
+- Mode: `edit`.
+- Original PNG: `/root/.codex/generated_images/01a15c6a-470c-7243-912f-d302d472ab8c/exec-5c567392-cb57-44fe-aa6f-0afb6b12a257.png` (1672 × 941, 1155630 bytes).
+- Reference: `/root/.codex/generated_images/01a15c6a-470c-7243-912f-d302d472ab8c/exec-1e1ec4ac-c632-414d-96b9-89159f877e2e.png`.
+
+Exact prompt:
+
+```text
+Use case: precise-object-edit.
+Input image 1 is the edit target. Preserve this exact streaming-data concept and its photorealistic glass, brushed silver, blue and black material treatment: THREE partition queues containing stacked event-record cards, TWO transform gates, connected record streams, and ONE structured table output. No text or labels.
+Change ONLY the framing and compact arrangement. The present pipeline is too spread out horizontally. Pull the camera back and gather the connected nodes closer together so all three partition queue boxes, both transform gates, and the ENTIRE output table fit inside the central 60 percent of the 16:9 canvas width, from roughly20 percent to80 percent, and central70 percent of its height. The boxes and output table should still be large and crisp enough to distinguish. Let only a few incoming event cards trail into the otherwise mostly empty left margin. Leave a wide pure-black safety margin to the right of the complete output table, approximately20 percent of image width. Preserve clear gaps and short blue links between stages so the sequence remains legible.
+The purpose is a centered mobile crop: every essential stage must remain visible when the leftmost19 percent and rightmost19 percent of this wide image are hidden. Keep the wide16:9 canvas and seamless black background, fine reflections, restrained blue, and the same conceptual data pipeline. Do not add any objects, words, letters, numbers, labels, logos, UI, code, CPU hardware, circuit boards, or server racks.
+```
+
+## Lakehouse work story
+
+- Output: `public/lakehouse-architecture.webp`, 1672 × 941, 131968 bytes.
+- Manifest: `output/imagegen/lakehouse-architecture-manifest.json`.
+
+### Generation
+
 - Mode: `generate`.
-- Reference images: none; generated from the prompt.
+- Original PNG: `/root/.codex/generated_images/01a15c69-37a0-78b1-942b-5c899da0f076/exec-efc85705-ad00-4711-8719-005ba9cf52e5.png` (1672 × 941, 1834407 bytes).
+- Reference images: none.
 
 Exact prompt:
 
 ```text
 Use case: stylized-concept.
-Asset type: original cinematic 16:9 wide feature artwork for a premium data platform portfolio.
-Scene: seamless white-to-soft-silver studio, softly lit pale floor with delicate realistic contact shadows.
-Subject: an original conceptual data warehouse architecture built from elegant translucent ice-blue optical-glass volumes and precision silver-titanium structural layers. Use a distinctive horizontally arranged modular architectural form: several staggered glass chambers joined by slim machined silver bridges and terraces, with precise open negative spaces, rising gently toward a central taller transparent volume. Strong geometry, purposeful engineering, refined bevels. This must be visually distinct from a three-plate processor stack: a sophisticated physical architectural model rather than exploded square plates.
-Style: immaculate photorealistic 3D studio product render, convincing translucent glass, very fine brushed titanium grain, beautifully controlled white highlights and refraction, gentle shadows, quiet premium materials. Three-quarter camera angle, balanced composition with generous clean white margins. Landscape 16:9 image; full object visible.
-Constraints: original design, no branded products. No text, letters, numbers, logos, watermark, UI, screens, fake code, labels, people, or charts. Restrained white, silver, cool-gray and translucent pale-blue palette. Opaque white background.
+Asset type: original wide 16:9 artwork for a data engineer's portfolio work story.
+Primary request: a premium, unmistakably DATA ENGINEERING lakehouse architecture rendered as a compact, elegant physical model. The subject must read as organized datasets, databases, transformation and analytics, never as computer hardware.
+Scene/backdrop: seamless white to very light silver studio, pale matte floor, gentle realistic contact shadows and a little clean negative space.
+Subject: at the center, three staggered, partially separated translucent tabular data sheets with precise visible rows and columns of small neutral geometric cells, expressing raw, cleaned and curated datasets through increasing order. Connect these layers with restrained clear-blue dataflow paths. Beside and behind the central sheets are two recognizable upright frosted-glass DATABASE CYLINDERS with three stacked circular tiers and clean elliptical tops, softly illuminated ice blue. On the other side are a small orderly warehouse-style stack of organized dataset trays and one elegant analytics output module formed from a few solid blue rising bars. These are physical conceptual forms, not screens or user interfaces. A small number of blue connectors make the input-to-transformation-to-output logic legible.
+Composition/framing: centered three-quarter isometric view, wide landscape 16:9. Keep the main database cylinders, layered tables and connectors together in the central 60 percent of the frame, so a mobile center crop still clearly conveys data engineering. Full object visible with balanced margins, no tiny distant parts.
+Style/materials: immaculate high-end studio 3D product rendering, polished minimal design, frosted and translucent glass, restrained brushed silver supports, precise bevels, subtle refraction, soft white edge highlights. Visually clear, quiet, sophisticated, physically coherent. White, silver and translucent ice blue, with stronger azure reserved for the data connections.
+Constraints: original conceptual architecture; no text, letters, numbers, labels, logos or watermarks. No CPU, processor chips, motherboards, circuit-board traces, server racks, ports, cables, branded products, people, fake code, screens or fake UI. Opaque light background.
 ```

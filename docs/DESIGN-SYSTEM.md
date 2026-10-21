@@ -96,8 +96,10 @@ button actions then scroll immediately. See
 
 ## Artwork
 
-The desktop and mobile data-core images and both work-story images are original
-conceptual artwork generated with the built-in OpenAI image tool. Hero uses
+The desktop and mobile data-pipeline images and both work-story images are original
+conceptual artwork generated with the built-in OpenAI image tool. Database cylinders,
+tabular layers, branching workflows, and analytics forms make the data-engineering
+subject recognizable. Glass, silver, and blue connectors maintain the palette. Hero uses
 `getImageProps` in a responsive `<picture>`; Work uses Next Image. Personal project
 illustrations remain decorative CSS compositions. See [visual assets](ASSETS.md) for
 the exact prompts, dimensions, and provenance.

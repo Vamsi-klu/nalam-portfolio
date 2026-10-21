@@ -724,7 +724,7 @@
     height: 300px;
   }
   .work-story-streaming-analytics .work-story-image {
-    object-position: 90% 50%;
+    object-position: 60% 50%;
   }
   .work-story-copy {
     grid-template-columns: 1fr;
