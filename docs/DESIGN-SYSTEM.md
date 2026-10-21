@@ -1,10 +1,9 @@
 # Design system
 
-The page uses black, white, and silver surfaces with blue actions. Oversized sans
-headings, centered introductions, rounded project cards, and generous spacing give
-each section a clear hierarchy. The black hero uses original data-core artwork;
-work, biography, and experience use light surfaces, while open source and contact
-return to black.
+The page uses black, white, and silver surfaces with blue actions. An image-led hero,
+compact chapter headings, large work images, and rounded project cards establish
+the hierarchy. Work, biography, and experience use light surfaces, while open source
+and contact return to black.
 
 ## Tokens and Tailwind
 
@@ -34,15 +33,18 @@ the descriptive current tokens for new styles.
 
 ## Typography and layout
 
-The body uses the platform system sans font, with Geist Sans as a fallback. Geist
-Mono remains available for technical details. Headings use tight tracking, a
-semibold weight, and color emphasis. Keep
+The sans stack is `-apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial,
+sans-serif`; technical details use system monospace fonts. No web fonts are loaded.
+Headings use tight tracking, a semibold weight, and selective color emphasis. Keep
 visitor-facing words in `src/content/site.ts`.
 
 The shared `.section` shell caps content at 1200px and adjusts its gutters and vertical
-spacing at smaller widths. The hero centers its copy above a large responsive image.
-The navigation is a compact glass bar. Use section stylesheets for layouts specific
-to work, biography, experience, and contact.
+spacing at smaller widths. The hero gives the artwork most of its initial stage,
+with a separate portrait composition on mobile. Native scrolling advances from the
+introduction to a centered story. Work uses wide image panels with summaries beneath
+them. Chapter headings stay compact enough to keep the content in view. The navigation
+is a compact glass bar. Use section stylesheets for layouts specific to the hero,
+work, biography, experience, and contact.
 
 | Class | Purpose |
 | --- | --- |
@@ -59,20 +61,26 @@ to work, biography, experience, and contact.
 
 ## Motion
 
-Use transform and opacity for movement. The hero image translates and scales slightly
-as the visitor scrolls; it has no idle animation loop. Metrics render their final
-values immediately. The hero copy has a short entrance rather than a typewriter.
+Use transform and opacity for movement. The hero pins its stage during native scroll,
+scales and dims the artwork, and transitions between two copy stages. A thin progress
+line follows the scene. It has no idle animation loop. Open-source counts render
+their final values immediately; the duplicate Impact strip is no longer mounted.
 
-`Reveal` provides a one-time entrance through an intersection observer and the Web
-Animations API. It preserves semantic elements through `as` and leaves content visible
-without JavaScript. Use short delays only where they help establish reading order.
+`Reveal` provides a 600ms entrance through an intersection observer and the Web
+Animations API, replaying after content fully exits and re-enters the viewport.
+It preserves semantic elements through `as`, leaves content visible without
+JavaScript, and keeps already-visible content visible during hydration. Keyboard
+focus cancels any active entrance. Use short delays only where they help reading order.
 
 The project gallery uses native horizontal scrolling and scroll snap. Previous/next
 buttons advance by one card and disable at the track edges. Its cards and illustrations
 are server-rendered; only scrolling controls need client state.
 
-Reduced-motion preferences disable smooth scrolling, transitions, and animation,
-reset the hero transform, and make gallery button scrolling immediate. See
+Reduced-motion preferences disable smooth scrolling, transitions, and animation.
+The hero becomes a normal-flow sequence with both copy stages visible; the same layout
+is used without scripting and on short viewports. Native preference listeners respond
+while the page is open, canceling entrances and smooth gallery scrolling. Gallery
+button actions then scroll immediately. See
 [architecture](ARCHITECTURE.md#motion-and-reduced-motion) for implementation details.
 
 ## Accessibility
@@ -88,7 +96,8 @@ reset the hero transform, and make gallery button scrolling immediate. See
 
 ## Artwork
 
-`public/data-core.webp` is original artwork generated with the built-in OpenAI image
-tool, not an employer infrastructure image. Next Image delivers it responsively.
-The project illustrations are decorative CSS compositions. See
-[visual assets](ASSETS.md) for the image-generation prompt and conversion details.
+The desktop and mobile data-core images and both work-story images are original
+conceptual artwork generated with the built-in OpenAI image tool. Hero uses
+`getImageProps` in a responsive `<picture>`; Work uses Next Image. Personal project
+illustrations remain decorative CSS compositions. See [visual assets](ASSETS.md) for
+the exact prompts, dimensions, and provenance.

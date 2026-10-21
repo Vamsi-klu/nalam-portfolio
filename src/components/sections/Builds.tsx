@@ -113,11 +113,8 @@ export function Builds() {
       aria-labelledby="builds-title"
     >
       <Reveal className="builds-heading">
-        <p className="eyebrow">{editorial.builds.eyebrow}</p>
         <h2 id="builds-title" className="display-heading">
-          {editorial.builds.title}
-          <br />
-          <em>{editorial.builds.accent}</em>
+          {editorial.builds.title} <em>{editorial.builds.accent}</em>
         </h2>
         <p className="builds-note">{editorial.builds.note}</p>
       </Reveal>

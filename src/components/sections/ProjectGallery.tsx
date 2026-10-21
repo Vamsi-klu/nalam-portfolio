@@ -18,12 +18,15 @@ export function ProjectGallery({
   next,
 }: ProjectGalleryProps) {
   const viewport = useRef<HTMLDivElement>(null);
+  const motionPreference = useRef<MediaQueryList | null>(null);
   const reducedMotion = useReducedMotion();
   const [edges, setEdges] = useState({ start: true, end: false });
 
   useEffect(() => {
     const node = viewport.current;
     if (!node) return;
+    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    motionPreference.current = preference;
     const update = () => {
       const start = node.scrollLeft <= 2;
       const end = node.scrollLeft + node.clientWidth >= node.scrollWidth - 2;
@@ -33,12 +36,21 @@ export function ProjectGallery({
           : { start, end },
       );
     };
+    const onPreferenceChange = () => {
+      if (preference.matches) {
+        node.scrollTo({ left: node.scrollLeft, behavior: "instant" });
+        update();
+      }
+    };
     const observer = new ResizeObserver(update);
     observer.observe(node);
     node.addEventListener("scroll", update, { passive: true });
+    preference.addEventListener("change", onPreferenceChange);
     return () => {
       observer.disconnect();
       node.removeEventListener("scroll", update);
+      preference.removeEventListener("change", onPreferenceChange);
+      motionPreference.current = null;
     };
   }, []);
 
@@ -49,7 +61,10 @@ export function ProjectGallery({
     const gap = Number.parseFloat(getComputedStyle(node).columnGap) || 0;
     node.scrollBy({
       left: direction * (firstCard.offsetWidth + gap),
-      behavior: reducedMotion ? "instant" : "smooth",
+      behavior:
+        (motionPreference.current?.matches ?? reducedMotion)
+          ? "instant"
+          : "smooth",
     });
   }
 

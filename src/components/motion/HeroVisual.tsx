@@ -2,40 +2,92 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 
+function phase(progress: number, start: number, end: number) {
+  const value = Math.min(1, Math.max(0, (progress - start) / (end - start)));
+  return value * value * (3 - 2 * value);
+}
+
 export function HeroVisual({ children }: { children: ReactNode }) {
-  const element = useRef<HTMLDivElement>(null);
+  const track = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    const node = element.current;
+    const node = track.current;
     if (!node) return;
     const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
     let frame = 0;
+    let relevant = true;
+
     const update = () => {
       frame = 0;
-      const section = node.closest("section");
-      if (!section) return;
-      const bounds = section.getBoundingClientRect();
-      const progress = preference.matches
-        ? 0
-        : Math.max(0, Math.min(1, -bounds.top / bounds.height));
-      node.style.setProperty("--hero-progress", String(progress));
+      const stage = node.firstElementChild as HTMLElement | null;
+      if (!stage) return;
+      const bounds = node.getBoundingClientRect();
+      const top = Number.parseFloat(getComputedStyle(stage).top) || 0;
+      const travel = node.offsetHeight - stage.offsetHeight;
+      const progress =
+        preference.matches || travel <= 0
+          ? 0
+          : Math.min(1, Math.max(0, (top - bounds.top) / travel));
+      const reveal = phase(progress, 0.34, 0.5);
+      node.style.setProperty("--scene-progress", String(progress));
+      node.style.setProperty(
+        "--intro-opacity",
+        String(1 - phase(progress, 0.06, 0.34)),
+      );
+      node.style.setProperty(
+        "--intro-shift",
+        -phase(progress, 0.06, 0.36) * 32 + "px",
+      );
+      node.style.setProperty(
+        "--art-scale",
+        String(1 + phase(progress, 0.04, 0.8) * 0.42),
+      );
+      node.style.setProperty(
+        "--art-shift",
+        -phase(progress, 0.1, 0.85) * 8 + "%",
+      );
+      node.style.setProperty(
+        "--art-opacity",
+        String(1 - phase(progress, 0.14, 0.36) * 0.86),
+      );
+      node.style.setProperty("--story-opacity", String(reveal));
+      node.style.setProperty("--story-shift", (1 - reveal) * 36 + "px");
     };
     const schedule = () => {
-      if (!frame) frame = requestAnimationFrame(update);
+      if (relevant && !frame) frame = requestAnimationFrame(update);
+    };
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        relevant = entry.isIntersecting;
+        if (relevant) schedule();
+      },
+      { rootMargin: "120px" },
+    );
+    observer.observe(node);
+    const onPreferenceChange = () => {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      update();
     };
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule);
-    preference.addEventListener("change", schedule);
+    window.addEventListener("pageshow", schedule);
+    preference.addEventListener("change", onPreferenceChange);
     update();
+
     return () => {
       cancelAnimationFrame(frame);
+      observer.disconnect();
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
-      preference.removeEventListener("change", schedule);
+      window.removeEventListener("pageshow", schedule);
+      preference.removeEventListener("change", onPreferenceChange);
     };
   }, []);
+
   return (
-    <div ref={element} className="hero-product" aria-hidden="true">
-      {children}
+    <div ref={track} className="hero-scroll-track">
+      <div className="hero-stage">{children}</div>
     </div>
   );
 }

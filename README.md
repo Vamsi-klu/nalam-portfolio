@@ -1,8 +1,9 @@
 # Ramachandra Nalam portfolio
 
-A personal portfolio for a Data Engineer, with a cinematic black hero, white and
-silver sections, blue actions, and public open-source contributions. Original data-core
-artwork moves subtly with scrolling. The production URL is
+A personal portfolio for a Data Engineer, with an image-led black hero, white and
+silver sections, blue actions, and public open-source contributions. Native scrolling
+progresses through a pinned introduction, followed by illustrated work stories.
+The production URL is
 [nalam-portfolio.vercel.app](https://nalam-portfolio.vercel.app).
 
 The site has one static route. Its sections introduce the work, link to public pull
@@ -14,8 +15,9 @@ There is no application backend or chat assistant.
 | Layer | Choice |
 | --- | --- |
 | Framework | Next.js 16.2.10 App Router, React 19.2, TypeScript |
-| Styling | Tailwind CSS v4, CSS custom properties, system sans with Geist fallback |
-| Motion | Scroll-linked hero transform, Web Animations API entrances, reduced-motion support |
+| Styling | Tailwind CSS v4, CSS custom properties, system sans with Helvetica Neue and Arial fallbacks |
+| Images | Original artwork, responsive hero art direction via `getImageProps`, Next Image work stories |
+| Motion | Native pinned scroll scene, Web Animations API entrances, live reduced-motion support |
 | Interaction | Native dialog navigation, scrolling project gallery, keyboard tabs, clipboard button |
 | Analytics | Vercel Web Analytics |
 | Validation | ESLint 9 and the Next.js production build |
@@ -39,7 +41,7 @@ The unused `AsciiPortrait.tsx` component has a pre-existing
 ## Project layout
 
 ```text
-src/app/                 Route composition, metadata, fonts, global styles
+src/app/                 Route composition, metadata, global styles
 src/components/layout/   Navigation and footer
 src/components/motion/   Reveal and HeroVisual
 src/components/sections/ Page sections, ProjectGallery, CopyEmail, section stylesheets
@@ -47,11 +49,12 @@ src/components/ui/       Shared icons
 src/components/canvas/   Legacy canvas components, not mounted
 src/content/site.ts      Identity, copy, projects, PRs, navigation, canonical URL
 src/lib/utils.ts         Conditional class-name helper
-public/                  Profile photo, original data-core artwork, static assets
+public/                  Profile photo, original hero and work artwork, static assets
 ```
 
-`page.tsx` renders Hero, Impact, Work, Oss, Builds, About, Experience, and Contact,
-with a sticky navigation bar and footer. The legacy sidebar is not mounted.
+`page.tsx` renders Hero, Work, Oss, Builds, About, Experience, and Contact, with a
+sticky navigation bar and footer. The legacy sidebar and separate Impact metric
+strip are not mounted; open-source counts appear within Oss.
 
 ## Content and deployment
 
@@ -68,7 +71,7 @@ before publishing changes. Canonical metadata reads from `site.domain`.
 
 - [Architecture](docs/ARCHITECTURE.md): rendering, component boundaries, navigation.
 - [Design system](docs/DESIGN-SYSTEM.md): palette, typography, layout, motion.
-- [Visual assets](docs/ASSETS.md): artwork provenance and generation prompt.
+- [Visual assets](docs/ASSETS.md): artwork provenance, exact generation prompts, and dimensions.
 - [Content](docs/CONTENT.md): content exports and editorial policy.
 - [Deployment](docs/DEPLOYMENT.md): Vercel configuration and browser checks.
 - [Contributing](CONTRIBUTING.md): local workflow and conventions.

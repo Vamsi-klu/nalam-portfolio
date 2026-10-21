@@ -75,8 +75,9 @@
   --color-light-slate: var(--light-slate);
   --color-lightest-slate: var(--lightest-slate);
   --color-white-soft: var(--white);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
 html {
   scroll-behavior: smooth;
@@ -87,7 +88,7 @@ body {
   background: var(--paper);
   color: var(--ink);
   font-family:
-    -apple-system, BlinkMacSystemFont, var(--font-geist-sans), sans-serif;
+    -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 ::selection {
@@ -121,7 +122,7 @@ em {
 .section {
   width: min(1200px, calc(100% - 64px));
   margin-inline: auto;
-  padding-block: 120px;
+  padding-block: 96px;
 }
 .section-shell {
   width: min(1200px, calc(100% - 64px));
@@ -137,9 +138,9 @@ em {
   letter-spacing: -0.3px;
 }
 .display-heading {
-  font-size: clamp(42px, 5.2vw, 72px);
+  font-size: clamp(40px, 4.2vw, 56px);
   line-height: 1.055;
-  letter-spacing: -0.055em;
+  letter-spacing: -0.025em;
   font-weight: 600;
 }
 .display-heading em {
@@ -232,7 +233,7 @@ em {
 .main-nav {
   width: min(1200px, calc(100% - 64px));
   margin-inline: auto;
-  height: 64px;
+  height: 52px;
   display: flex;
   align-items: center;
   gap: 28px;
@@ -333,101 +334,6 @@ em {
 .mobile-dialog li a:hover {
   color: var(--accent-light);
 }
-.product-hero {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  background: var(--black);
-  color: var(--on-dark);
-  text-align: center;
-  padding-top: 70px;
-}
-.hero-copy {
-  position: relative;
-  z-index: 2;
-  width: min(1100px, calc(100% - 40px));
-  margin-inline: auto;
-  animation: hero-enter 1s cubic-bezier(0.2, 0.7, 0.3, 1) both;
-}
-.hero-identity {
-  font-size: 23px;
-  letter-spacing: -0.5px;
-  font-weight: 550;
-  margin-bottom: 22px;
-}
-.hero-copy h1 {
-  font-size: clamp(58px, 7.3vw, 106px);
-  font-weight: 600;
-  line-height: 1.025;
-  letter-spacing: -0.065em;
-}
-.hero-copy h1 span {
-  display: block;
-  background: linear-gradient(
-    110deg,
-    var(--paper) 18%,
-    var(--accent-light) 58%,
-    var(--violet) 88%
-  );
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.hero-description {
-  font-size: 23px;
-  line-height: 1.45;
-  letter-spacing: -0.5px;
-  color: var(--dark-muted);
-  margin: 26px auto 0;
-  max-width: 640px;
-}
-.hero-actions {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-  margin-top: 30px;
-}
-.hero-actions .btn-ghost {
-  color: var(--accent-light);
-  border-color: var(--accent-light);
-}
-.hero-actions .btn-ghost:hover {
-  color: var(--paper);
-}
-.hero-product {
-  --hero-progress: 0;
-  position: relative;
-  margin: 4px auto 0;
-  width: min(1280px, 100%);
-  aspect-ratio: 1672 / 941;
-  transform-origin: center 40%;
-}
-.hero-product img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  transform: translateY(calc(var(--hero-progress) * 45px))
-    scale(calc(1 + var(--hero-progress) * 0.06));
-  mask-image: linear-gradient(
-    to bottom,
-    transparent 0%,
-    var(--black) 8%,
-    var(--black) 87%,
-    transparent 100%
-  );
-}
-.hero-scroll-note {
-  position: relative;
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 14px 20px 44px;
-  color: var(--dark-muted);
-  font-size: 14px;
-}
-.hero-scroll-note:hover {
-  color: var(--paper);
-}
 .site-footer {
   background: var(--silver);
   color: var(--muted);
@@ -453,16 +359,6 @@ em {
   align-items: center;
   color: var(--ink);
 }
-@keyframes hero-enter {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 @keyframes menu-enter {
   from {
     opacity: 0;
@@ -471,11 +367,6 @@ em {
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-@media (min-width: 1600px) {
-  .hero-product {
-    width: 1400px;
   }
 }
 @media (max-width: 1000px) {
@@ -488,9 +379,6 @@ em {
   .main-nav {
     gap: 24px;
   }
-  .product-hero {
-    padding-top: 64px;
-  }
 }
 @media (max-width: 800px) {
   .section,
@@ -500,10 +388,10 @@ em {
     width: calc(100% - 48px);
   }
   .section {
-    padding-block: 90px;
+    padding-block: 80px;
   }
   .display-heading {
-    font-size: 52px;
+    font-size: 44px;
   }
   .desktop-nav {
     display: none;
@@ -513,7 +401,7 @@ em {
     margin-right: auto;
   }
   .main-nav {
-    height: 60px;
+    height: 52px;
     gap: 18px;
   }
   .menu-toggle {
@@ -523,34 +411,17 @@ em {
   .nav-contact {
     margin-left: auto;
   }
-  .hero-copy h1 {
-    font-size: clamp(52px, 9.5vw, 76px);
-  }
-  .hero-description {
-    max-width: 540px;
-    padding-inline: 24px;
-    font-size: 21px;
-  }
-  .hero-product {
-    width: 114%;
-    max-width: none;
-    margin-left: -7%;
-    margin-top: 26px;
-  }
-  .hero-scroll-note {
-    padding-bottom: 30px;
-  }
 }
 @media (max-width: 540px) {
   .section {
-    padding-block: 72px;
+    padding-block: 64px;
   }
   .eyebrow {
     font-size: 17px;
   }
   .display-heading {
-    font-size: clamp(36px, 10vw, 48px);
-    letter-spacing: -0.045em;
+    font-size: 36px;
+    letter-spacing: -0.025em;
   }
   .main-nav {
     gap: 13px;
@@ -565,40 +436,11 @@ em {
     font-size: 11px;
     padding: 7px 11px;
   }
-  .product-hero {
-    padding-top: 58px;
-  }
-  .hero-identity {
-    font-size: 17px;
-    margin-bottom: 22px;
-  }
-  .hero-copy h1 {
-    font-size: clamp(43px, 10.6vw, 58px);
-    letter-spacing: -0.06em;
-  }
-  .hero-description {
-    font-size: 19px;
-    padding-inline: 0;
-    max-width: 330px;
-    margin-top: 23px;
-  }
-  .hero-actions {
-    gap: 12px;
-    margin-top: 27px;
-  }
   .btn-accent,
   .btn-ghost {
     font-size: 14px;
-    min-height: 43px;
+    min-height: 44px;
     padding: 11px 17px;
-  }
-  .hero-product {
-    width: 142%;
-    margin-left: -21%;
-    margin-top: 36px;
-  }
-  .hero-scroll-note {
-    font-size: 12px;
   }
   .footer-inner {
     align-items: flex-start;
@@ -624,8 +466,5 @@ em {
   *::after {
     animation: none !important;
     transition: none !important;
-  }
-  .hero-product img {
-    transform: none;
   }
 }

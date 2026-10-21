@@ -20,10 +20,10 @@ code is private.
 
 | Export | Active consumer |
 | --- | --- |
-| `site` | Hero identity, navigation name, About, Impact, Oss metrics, Contact, CopyEmail, footer, metadata |
+| `site` | Hero identity, navigation name, About, Oss metrics, Contact, CopyEmail, footer, metadata |
 | `editorial` | Section headings, action labels, accessibility text, contact feedback, metadata |
 | `experience` | Experience tabs and panels |
-| `work` | Selected-work stories, excluding the retained `oss-data-stack` entry |
+| `work` | Selected-work stories with a matching artwork entry in Work |
 | `builds` | Server-rendered project cards inside ProjectGallery |
 | `oss` | Contribution summary, upstream names, public PR list, all-contributions link |
 | `nav` | Desktop and mobile NavBar links |
@@ -42,29 +42,30 @@ About renders one paragraph per `about` entry, the `now` label/value pairs, and 
 skill card per category in `skills`. Skill values are arrays of technology names.
 Check long values at narrow widths when updating these arrays.
 
-Impact prints each metric's `display` and `label` immediately. There is no count-up.
-The numeric `value` and `suffix` fields remain in the model; keep them consistent
-with `display`. The responsive grid currently fits six facts in six, three, or two
-columns.
-
-Oss reuses `site.metrics.slice(1, 3)` for opened and merged PR counts. Preserve those
-positions when editing the array, or update that consumer. The retained
-`oss.headline` is not displayed, but keep its figures consistent if changing counts.
+Oss prints `display` and `label` from `site.metrics.slice(1, 3)` for opened and merged
+PR counts. Preserve those positions when editing the array, or update that consumer.
+Values are static; there is no count-up. The separate Impact metric strip is no longer
+mounted. The numeric `value` and `suffix` fields remain in the model; keep them
+consistent with `display`. The retained `oss.headline` is not displayed, but keep its
+figures consistent if changing counts.
 
 ## Editorial copy
 
 `editorial` separates presentation copy from biography and project facts:
 
 - `brand` and `navigation` supply the wordmark, menu labels, contact action, and skip link.
-- `hero` supplies the fixed heading, description, two actions, and scroll link.
-- `work`, `oss`, `builds`, `about`, `experience`, and `impact` supply section copy.
+- `hero.title` and `accent` supply the introduction. `storyTitle`, `storyAccent`,
+  `storyDescription`, and `storySteps` supply the second scroll stage. `work`, `source`,
+  and `scroll` label the work, about, and scroll links.
+- `work`, `oss`, `builds`, `about`, and `experience` supply section copy.
 - `builds.previous` and `builds.next` label gallery controls; `code` and `demo` label
   the optional project links.
 - `contact` supplies actions plus clipboard success and failure messages.
 - `footer.top` labels the return link; `metadata` supplies titles and descriptions.
 
-Hero does not read `site.heroLines`. That array and a few earlier editorial keys are
-retained but unused. Changes to them will not change the visible headline.
+Hero does not read `site.heroLines`, and it has no typewriter or pause/resume control.
+That array, `editorial.impact`, and earlier hero keys such as `description`, `artTop`,
+`pause`, and `resume` remain unused. Changes to them will not affect the mounted page.
 
 ## Experience and selected work
 
@@ -72,10 +73,12 @@ Each `experience` entry has `company`, `role`, `period`, and `bullets`. Order is
 newest first. Full company names appear in horizontal tabs, with labelled panels and
 keyboard controls. Keep company names and bullet strings distinct for React keys.
 
-Selected work renders the Meta and Amazon entries as large stories with technology
-lists and decorative architecture illustrations. It filters out `oss-data-stack`
-because contributions have a dedicated section. `WorkItem.metrics` remains in the
-model but is not rendered by the current Work component.
+Selected work renders the Meta and Amazon entries as image-led stories with summaries
+and technology lists. Work maps `streaming-analytics` to `/streaming-flow.webp` and
+`aws-data-platform` to `/platform-architecture.webp`, rendering only entries with a
+matching image. Adding a story requires both content and an artwork mapping. The
+retained `oss-data-stack` entry has no mapping because contributions have a dedicated
+section. `WorkItem.metrics` remains in the model but is not rendered by Work.
 
 ## Personal builds and public links
 
@@ -106,7 +109,7 @@ an entry. `allPrsUrl` points to an author-scoped GitHub search.
 Menu order follows the page: home, work, open source, builds, about, experience,
 contact. Each `nav.id` must match its section anchor. Desktop navigation uses the
 wordmark for home and a separate contact action; the mobile dialog lists all entries.
-Impact is deliberately absent. The old SidebarNav is not mounted.
+Impact and the old SidebarNav are not mounted.
 
 `education` and `site.resumeUrl` remain unused. There is no `public/resume.pdf`, so do
 not add a résumé action without supplying the file. The active portrait is

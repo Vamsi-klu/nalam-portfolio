@@ -10,34 +10,43 @@ assistant. Client components handle only interaction and motion.
 The main content is ordered as follows:
 
 ```text
-Hero → Impact → Work → Oss → Builds → About → Experience → Contact
+Hero → Work → Oss → Builds → About → Experience → Contact
 ```
 
 Each section has a stable anchor. Navigation labels and destinations come from
-`nav` in `src/content/site.ts`; its order follows the page. Impact has no navigation
-entry. `SidebarNav` remains in the repository but is not mounted.
+`nav` in `src/content/site.ts`; its order follows the page. `Impact` and `SidebarNav`
+remain in the repository but are not mounted. The separate metrics strip has been
+removed; open-source counts appear in Oss.
 
-`layout.tsx` loads Geist Sans and Geist Mono, exports metadata, imports global styles,
-and mounts Vercel Analytics. Canonical and OpenGraph URLs use `site.domain`. The profile
+`layout.tsx` exports metadata, imports global styles, and mounts Vercel Analytics.
+Typography uses local system fonts, with Helvetica Neue and Arial fallbacks; there
+is no web-font import. Canonical and OpenGraph URLs use `site.domain`. The profile
 photo supplies the social preview image, and `public/brand.svg` supplies the icon.
 
 ## Server and client components
 
 | Component | Rendering responsibility |
 | --- | --- |
-| Hero, Impact, Work, Oss, Builds, About, Contact, Footer | Server-rendered content and layout |
+| Hero, Work, Oss, Builds, About, Contact, Footer | Server-rendered content and layout |
 | NavBar | Compact glass header and native mobile navigation dialog |
-| HeroVisual | Scroll-linked transform around the server-rendered hero image |
+| HeroVisual | Native pinned scroll scene around server-rendered artwork and copy |
 | Reveal | Scroll entrance around server-rendered children |
 | ProjectGallery | Native horizontal scrolling and previous/next card controls |
 | Experience | Selected tab, keyboard navigation, and associated panels |
 | CopyEmail | Clipboard interaction and accessible success/error feedback |
 
-Hero stays a Server Component and passes an eager, high-priority Next Image into `HeroVisual`.
-The decorative image is `/data-core.webp`; its original generation prompt and
-conversion details are in [visual assets](ASSETS.md). Impact prints the final metric
-values immediately. About renders the real profile photo at `/profile.jpg`, with
-explicit dimensions and lazy loading.
+Hero stays a Server Component and uses `getImageProps` to build an eager, high-priority
+`<picture>`. Screens up to 800px wide receive the portrait `/hero-mobile.webp`;
+wider screens receive `/data-core.webp`. The browser selects an optimized source
+for the active art direction. `HeroVisual` receives the image and both copy stages
+as server-rendered children.
+
+Work maps `streaming-analytics` and `aws-data-platform` to `/streaming-flow.webp` and
+`/platform-architecture.webp`. Each story has a responsive Next Image above its
+high-level summary and technology list. All four images are decorative conceptual
+artwork; prompts and conversion details are in [visual assets](ASSETS.md). About
+renders the real profile photo at `/profile.jpg`, with explicit dimensions and lazy
+loading.
 
 Pass server-rendered children into `Reveal` when a section needs an entrance effect.
 Keep content in `src/content/site.ts`, including the `editorial` export for headings,
@@ -45,21 +54,29 @@ labels, and interaction messages.
 
 ## Motion and reduced motion
 
-`HeroVisual` measures the hero's position on scroll and resize, then writes a bounded
-`--hero-progress` CSS variable. CSS uses it for a small translation and scale of the
-image. Events are batched through `requestAnimationFrame`; there is no continuous
-animation loop or per-frame React state. Reduced-motion preferences reset progress
-to zero, including when the preference changes while the page is open. Cleanup
-cancels the pending frame and removes listeners.
+`HeroVisual` measures progress through a scroll track containing a sticky stage.
+Bounded CSS variables fade the introduction, scale and dim the artwork, reveal the
+second story, and advance a decorative progress line. Scrolling stays native.
+An intersection observer limits updates to the nearby hero; scroll, resize, and
+pageshow events schedule at most one pending animation frame. There is no idle loop
+or per-frame React state. Cleanup removes listeners and cancels pending work.
 
-`Reveal` uses `IntersectionObserver` and the Web Animations API for a single fade and
-16px entrance. Content is visible in the server HTML and remains visible without
-JavaScript. Its `as` prop preserves the requested element in every motion mode.
-Cleanup disconnects the observer and cancels an active animation.
+Native media-query changes update the hero immediately. Under reduced motion,
+without scripting, or in viewports at most 650px high, CSS presents artwork and both
+copy stages in normal flow without pinning or transformations.
+
+`Reveal` uses `IntersectionObserver` and the Web Animations API for a 600ms fade and
+16px entrance. It prepares offscreen content and replays the entrance after that
+content fully leaves and re-enters the viewport. Content already visible at hydration
+stays visible. Server HTML remains visible without JavaScript, and `as` preserves
+the requested element in every mode. Focus entering the element cancels an animation
+so keyboard users can see the focused content.
 
 The global reduced-motion media query disables CSS animation, transitions, and smooth
-scrolling. `useReducedMotion()` also prevents JavaScript entrances and makes gallery
-button scrolling immediate.
+scrolling. Reveal and ProjectGallery subscribe to native preference changes as well
+as using `useReducedMotion()` for their initial fallback. A live change cancels Reveal
+animations and halts smooth gallery scrolling; subsequent gallery actions are
+immediate. Observers, animation objects, and preference listeners are cleaned up.
 
 ## Navigation and contact
 
@@ -81,7 +98,7 @@ visible address available.
 ## Styles and retained files
 
 Global tokens and shared layout live in `src/app/globals.css`. Section-specific styles
-live in `src/components/sections/profile.css` and `work.css`. See the
+live in `src/components/sections/hero.css`, `profile.css`, and `work.css`. See the
 [design system](DESIGN-SYSTEM.md) for the palette and shared classes.
 
 `AsciiPortrait`, `PipelineParticles`, and `SidebarNav` are retained legacy components,

@@ -58,9 +58,9 @@ export const site = {
     "Kafka · Spark · Airflow · Snowflake · dbt",
   ],
   about: [
-    "Result-oriented Data Engineer with 5+ years building large-scale data pipelines, real-time analytics, and data warehouses across technology and product analytics domains.",
-    "I design batch and streaming platforms, semantic modeling layers, and quality-first warehouse patterns — emphasizing reliability, observability, and maintainable self-serve analytics. Descriptions here stay high-level on purpose; employer-confidential work stays off this site.",
-    "Outside work I contribute upstream to Airflow, Pinot, Dagster, Airbyte, Flink, and Polars — I don't just use the data stack, I fix it.",
+    "I’m a data engineer with 5+ years of experience building large-scale pipelines, real-time analytics, and data warehouses.",
+    "My work connects batch and streaming platforms, semantic models, and reliable analytics. I care about systems that are observable, maintainable, and useful to the people who depend on them.",
+    "Outside work, I contribute to Airflow, Pinot, Dagster, Airbyte, Flink, and Polars. Better tools make better work possible.",
   ],
   /** Status chips rendered as `label · value` pairs in `About`. */
   now: [
@@ -196,7 +196,7 @@ export const work: WorkItem[] = [
     title: "Streaming Product Analytics",
     org: "Meta",
     summary:
-      "Event-driven analytics platforms: streaming ingestion, transform layers, semantic modeling, and self-serve reporting patterns for product stakeholders. Details kept non-confidential.",
+      "Streaming ingestion, semantic models, and reliable reporting for product analytics.",
     stack: ["Kafka", "Spark", "dbt", "Airflow", "Snowflake", "Looker"],
     metrics: ["Streaming + batch", "Semantic layers", "Quality-first"],
   },
@@ -205,7 +205,7 @@ export const work: WorkItem[] = [
     title: "AWS Data Platform & ETL",
     org: "Amazon",
     summary:
-      "Cloud-native batch and streaming data platform work on AWS — Glue/Spark ETL, Kafka paths, warehouse tuning, and automated BI delivery for recurring reporting needs.",
+      "AWS-native data pipelines, warehouse tuning, and dependable analytics delivery.",
     stack: ["Glue", "Kafka", "Redshift", "S3", "Aurora", "Spark"],
     metrics: ["AWS-native ETL", "Stream lag focus", "Warehouse tuning"],
   },
@@ -243,7 +243,7 @@ export const builds: BuildItem[] = [
     id: "nl2sql",
     title: "nl2sql",
     description:
-      "Natural language → SQL with multi-format upload, schema inference, multi-DB support, and a web UI.",
+      "Turn natural language into SQL, with schema inference and support for multiple databases.",
     stack: ["TypeScript", "SQL", "LLMs"],
     github: "https://github.com/Vamsi-klu/nl2sql",
   },
@@ -251,29 +251,27 @@ export const builds: BuildItem[] = [
     id: "jobkanban",
     title: "jobkanban",
     description:
-      "Job hunt Kanban with drag-and-drop stages, Google Sheets sync, JWT auth, and email alerts.",
+      "A job-search board with drag-and-drop stages, Google Sheets sync, and email alerts.",
     stack: ["JavaScript", "React", "Vercel"],
   },
   {
     id: "prompt-optimizer",
     title: "prompt-optimizer",
     description:
-      "Universal prompt scorer/optimizer across 7 dimensions with Gemini routing and history IDs.",
+      "Score and improve prompts across seven dimensions, with Gemini routing.",
     stack: ["TypeScript", "Gemini", "CLI"],
   },
   {
     id: "ytsummary",
     title: "YTSummary-Agent",
-    description:
-      "YouTube summarizer agent with templates, compare, playlist, export, and caching.",
+    description: "Summarize, compare, and export YouTube videos and playlists.",
     stack: ["Python", "Agents", "LLMs"],
     github: "https://github.com/Vamsi-klu/YTSummary-Agent",
   },
   {
     id: "agent-skills",
     title: "test-agent-skills",
-    description:
-      "Multi-agent routing system with hundreds of specialized agents across domains (Claude Agent SDK).",
+    description: "Route tasks to specialized agents with the Claude Agent SDK.",
     stack: ["Python", "Claude SDK", "RAG"],
     github: "https://github.com/Vamsi-klu/test-agent-skills",
   },
@@ -281,7 +279,7 @@ export const builds: BuildItem[] = [
     id: "retail-ai",
     title: "retail-ai-agent",
     description:
-      "Retail AI Pro — FastAPI + React for inventory, pricing, and forecasting workflows.",
+      "Inventory, pricing, and forecasting workflows built with FastAPI and React.",
     stack: ["Python", "FastAPI", "React"],
     github: "https://github.com/Vamsi-klu/retail-ai-agent",
   },
@@ -386,13 +384,18 @@ export const editorial = {
   },
   hero: {
     title: "Data engineering.",
-    accent: "A level above.",
+    accent: "Made to matter.",
     description: "Reliable platforms. Meaningful insights. Open-source impact.",
     work: "Explore my work",
     source: "Meet the engineer",
     location: "Based in Seattle",
     footnote: "Thinking at scale",
-    scroll: "Discover the work",
+    scroll: "Scroll to explore",
+    storyTitle: "Complexity in.",
+    storyAccent: "Clarity out.",
+    storyDescription:
+      "From real-time events to trusted decisions. I build the systems that connect them.",
+    storySteps: ["Ingest", "Transform", "Deliver"],
     artTop: "COMPLEXITY, CONNECTED.",
     artBottom: "DATA → POSSIBILITY",
     artIndex: "01 / ∞",
@@ -401,22 +404,22 @@ export const editorial = {
   },
   work: {
     eyebrow: "Selected work",
-    title: "Big ideas.",
-    accent: "Built to scale.",
+    title: "Systems built",
+    accent: "for scale.",
     note: "Streaming. Analytics. Platforms.",
     details: "Explore experience",
   },
   oss: {
     eyebrow: "Open source",
-    title: "Open by choice.",
-    accent: "Better by contribution.",
+    title: "Built in the open.",
+    accent: "",
     all: "Explore all contributions",
     label: "Selected contributions",
   },
   builds: {
     eyebrow: "Personal builds",
-    title: "A little curiosity.",
-    accent: "A lot of possibility.",
+    title: "Independent ideas.",
+    accent: "Real tools.",
     note: "Independent projects that turn an interesting question into a useful tool.",
     previous: "Previous projects",
     next: "Next projects",
