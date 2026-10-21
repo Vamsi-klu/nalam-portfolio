@@ -23,7 +23,7 @@ They are evidence from browser rendering, not generated screenshots of the site.
 | --- | --- | --- |
 | Desktop hero | `review-apple-pro-desktop-hero.png` | `third-fixed-hero-1440x1000-p0.png` |
 | Mobile hero | `review-apple-pro-mobile-hero.png` | `third-fixed-hero-390x844-p0.png` |
-| Desktop feature rhythm | `review-macbook-pro-desktop-highlights-settled.png` | `review-portfolio-desktop-work.png` |
+| Desktop feature rhythm | `review-macbook-pro-desktop-highlights-settled.png` | `third-fixed-work-1440x1000.png` |
 | White feature surface | `review-macbook-air-white-highlights.png` | `third-fixed-work-390x844.png` |
 | Scroll handoff | Reference product-page motion and chosen two-stage story | `third-fixed-hero-1440x1000-p0.5.png` |
 | Short phone | Responsive adaptation of the mobile target | `third-fixed-hero-375x667-p0.png` |
@@ -39,14 +39,15 @@ covered 375×667, 768×1024, 1024×768, and the 320×568 normal-flow fallback.
 Full-view comparisons assessed composition and density. Focused inspections of the
 hero at 20%, 40%, 50%, and 100% scroll progress checked image edges, text readability,
 and control placement. Mobile Work captures checked artwork crop and sharpness.
-Desktop and mobile gallery captures checked card density and controls.
+Desktop and mobile gallery captures (`third-builds-1440.png` and
+`third-builds-390.png`) checked card density and controls.
 
 ## Comparison history
 
 | Finding | Severity | Fix | Post-fix evidence |
 | --- | --- | --- | --- |
 | Oversized heading competed with hero artwork | P1 | Image-first stage, lower-left desktop title, mobile portrait composition, smaller headings | `third-fixed-hero-1440x1000-p0.png`, `third-fixed-hero-390x844-p0.png` |
-| Repetitive statistics and oversized headings delayed the work | P2 | Removed duplicate Impact strip; compacted section headings; moved public OSS evidence earlier | `review-portfolio-desktop-oss.png`, `review-portfolio-mobile-work.png` |
+| Repetitive statistics and oversized headings delayed the work | P2 | Removed duplicate Impact strip; compacted section headings; moved public OSS evidence earlier | `third-oss-1440.png`, `third-fixed-work-390x844.png` |
 | Enlarged hero revealed a rectangular bitmap boundary | P2 | Intrinsic image aspect ratio and intersecting horizontal/vertical edge masks | `third-fixed-hero-1440x1000-p0.2.png`, `third-fixed-hero-390x844-p0.4.png` |
 | Story text faded slowly across bright image details | P2 | Dim artwork first; shorten story reveal to reach full readability by halfway | `third-fixed-hero-1440x1000-p0.5.png`, `third-fixed-hero-390x844-p0.5.png` |
 | Minimum hero height clipped controls at 375×667 | P2 | Use available viewport height and cap mobile artwork by height | `third-fixed-hero-375x667-p0.png`, `cinematic-short-viewport-result.json` |
@@ -93,12 +94,24 @@ Analytics endpoint on the local server; deployed checks must verify its live sta
 
 `cinematic-local-axe.json` records zero automated violations across desktop/mobile,
 all Experience panels, and the open mobile menu. Contrast over artwork and the
-unopened native dialog require manual review; automated results alone do not prove
-full accessibility conformance.
+unopened native dialog received manual follow-up in `cinematic-manual-a11y.json`:
+99 text runs passed with no skipped samples, including the normal and reduced-motion
+hero, navigation over dark/light surfaces, and all Experience tab states. The lowest
+sampled ratio was 4.697:1. The menu control resolves to its native dialog, and Escape
+restores trigger focus. These checks do not prove full accessibility conformance.
 
 Motion checks include reversible hero phases, anchor restoration, resize,
 offscreen inactivity, entrance replay, delayed hydration, keyboard focus visibility,
 and preference changes while animation or gallery scrolling is in progress.
+
+The Vercel preview at application commit `f6fe7b9` passed the same interaction audit
+with no JavaScript errors, console errors, or failed requests. Nine deployed axe
+states reported zero violations. Browser inspection confirmed reversible hero phases
+and visible controls at 1440×1000, 390×844, and 375×667.
+
+Local Lighthouse measured performance 97 mobile and 100 desktop, accessibility and
+SEO 100 on both, and zero layout shift. Best practices scored 96 solely because of
+the local Vercel Analytics 404. These are local lab results, not field measurements.
 
 ## Accepted differences and follow-up polish
 
@@ -115,4 +128,5 @@ screenshots could make those cards more specific in a future content update (P3)
 - [x] Fix and recapture every actionable P0/P1/P2 finding.
 - [x] Verify keyboard, mobile, reduced-motion, and no-script behavior.
 - [x] Record residual limitations without claiming pixel identity or full WCAG certification.
-- [ ] Verify the exact new Vercel preview and production revisions before release handoff.
+- [x] Verify the new Vercel preview before production publication.
+- [ ] Verify the production revision before release handoff; this report is the pre-release snapshot.
