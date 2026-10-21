@@ -3,7 +3,8 @@
 A personal portfolio for a Data Engineer, with an image-led black hero, white and
 silver sections, blue actions, and public open-source contributions. Native scrolling
 progresses through a pinned introduction, followed by illustrated work stories.
-Original artwork depicts data pipelines, streaming workflows, and lakehouse layers.
+Original conceptual artwork pairs a folded graphite-and-silver signal sculpture
+with converging event streams and light data strata.
 The production URL is
 [nalam-portfolio.vercel.app](https://nalam-portfolio.vercel.app).
 
@@ -22,6 +23,10 @@ There is no application backend or chat assistant.
 | Interaction | Native dialog navigation, scrolling project gallery, keyboard tabs, clipboard button |
 | Analytics | Vercel Web Analytics |
 | Validation | ESLint 9 and the Next.js production build |
+
+Artwork sources are lossless WebP files. Next.js serves responsive variants at
+quality 85; the hero's scroll zoom is capped at 1.16×. See
+[visual assets](docs/ASSETS.md) for native dimensions and generation provenance.
 
 ## Local development
 

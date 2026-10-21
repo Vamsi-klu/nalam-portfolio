@@ -62,9 +62,10 @@ work, biography, experience, and contact.
 ## Motion
 
 Use transform and opacity for movement. The hero pins its stage during native scroll,
-scales and dims the artwork, and transitions between two copy stages. A thin progress
-line follows the scene. It has no idle animation loop. Open-source counts render
-their final values immediately; the duplicate Impact strip is no longer mounted.
+scales the artwork up to 1.16×, dims it, and transitions between two copy stages.
+A thin progress line follows the scene. It has no idle animation loop. Open-source
+counts render their final values immediately; the duplicate Impact strip is no
+longer mounted.
 
 `Reveal` provides a 600ms entrance through an intersection observer and the Web
 Animations API, replaying after content fully exits and re-enters the viewport.
@@ -96,10 +97,23 @@ button actions then scroll immediately. See
 
 ## Artwork
 
-The desktop and mobile data-pipeline images and both work-story images are original
-conceptual artwork generated with the built-in OpenAI image tool. Database cylinders,
-tabular layers, branching workflows, and analytics forms make the data-engineering
-subject recognizable. Glass, silver, and blue connectors maintain the palette. Hero uses
-`getImageProps` in a responsive `<picture>`; Work uses Next Image. Personal project
-illustrations remain decorative CSS compositions. See [visual assets](ASSETS.md) for
-the exact prompts, dimensions, and provenance.
+The desktop and mobile hero images use a folded graphite-and-silver signal sculpture
+with a dark aperture and restrained cobalt seams. The streaming story shows broad
+bands converging into ordered flow; the platform story uses light layered data
+strata. Broad surfaces, sparse detail, controlled edge lighting, and negative space
+create hierarchy. Avoid miniature database icons, equally bright objects, and dense
+glowing particle waves.
+
+Art direction draws on Apple's product-page framing, FIELD's data-driven forms,
+and FutureDeluxe's restrained lighting. Stripe and Snowflake references informed
+information hierarchy. The final images are original conceptual artwork generated
+with the built-in OpenAI image tool, not representations of employer infrastructure.
+
+`signal-fold-hero.webp` and `signal-fold-mobile.webp` supply the responsive hero;
+`event-stream.webp` and `warehouse-strata.webp` supply the work stories. Lossless
+WebP sources preserve native dimensions. Hero uses `getImageProps` in a `<picture>`;
+Work uses centered `object-fit: cover` Next Images. Both request quality 85 from the
+Next.js optimizer. Personal project illustrations remain decorative CSS compositions.
+On phones, the hero's upper mask reaches full opacity at 22% so its bright edge
+does not compete with the opening heading; desktop retains the 8% fade.
+See [visual assets](ASSETS.md) for exact prompts, dimensions, and reference provenance.

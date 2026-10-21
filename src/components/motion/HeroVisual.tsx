@@ -40,7 +40,7 @@ export function HeroVisual({ children }: { children: ReactNode }) {
       );
       node.style.setProperty(
         "--art-scale",
-        String(1 + phase(progress, 0.04, 0.8) * 0.42),
+        String(1 + phase(progress, 0.04, 0.8) * 0.16),
       );
       node.style.setProperty(
         "--art-shift",

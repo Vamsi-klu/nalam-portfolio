@@ -74,11 +74,16 @@ newest first. Full company names appear in horizontal tabs, with labelled panels
 keyboard controls. Keep company names and bullet strings distinct for React keys.
 
 Selected work renders the Meta and Amazon entries as image-led stories with summaries
-and technology lists. Work maps `streaming-analytics` to `/streaming-pipeline.webp` and
-`aws-data-platform` to `/lakehouse-architecture.webp`, rendering only entries with a
+and technology lists. Work maps `streaming-analytics` to `/event-stream.webp` and
+`aws-data-platform` to `/warehouse-strata.webp`, rendering only entries with a
 matching image. Adding a story requires both content and an artwork mapping. The
 retained `oss-data-stack` entry has no mapping because contributions have a dedicated
 section. `WorkItem.metrics` remains in the model but is not rendered by Work.
+
+The artwork expresses streaming convergence and layered data through original
+abstract forms. It does not document an employer's systems or add technical claims
+to the deliberately high-level work descriptions. Hero uses the separate
+`/signal-fold-hero.webp` and `/signal-fold-mobile.webp` compositions.
 
 ## Personal builds and public links
 

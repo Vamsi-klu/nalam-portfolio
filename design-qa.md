@@ -155,3 +155,40 @@ application errors. Evidence is in `output/playwright/de-image-production-visual
 with none skipped. The hero story's minimum sampled contrast is 5.285:1 on desktop
 and 5.300:1 on mobile. No actionable P0/P1/P2 visual issues remain in this local pass.
 Each subsequent Vercel deployment still requires browser verification.
+
+## Editorial artwork refinement — 2026-10-21
+
+This pass supersedes the preceding dataflow artwork. Research covered Apple,
+FIELD, FutureDeluxe, Found, Stripe, Snowflake, and Vercel, with reference images
+visually inspected before generation. The selected set uses a graphite-and-silver
+folded hero, broad converging event streams, and light layered warehouse strata.
+Two generic wave candidates were discarded; the chosen hero has a separate phone
+composition, and the warehouse image received framing and material refinements.
+Exact prompts and source references are in [visual assets](docs/ASSETS.md).
+
+All four WebP masters preserve their generated PNG pixels without resizing or
+upscaling. Responsive image delivery uses quality 85, and hero enlargement is
+limited to 1.16×. Work images use centered crops and cover-aware responsive sizes.
+Native source dimensions are 1672×941 and 1122×1402, not 4K. Device-pixel inspection
+at desktop DPR2 and phone DPR3 found no visible compression blocks or gradient
+banding; native source resolution still limits detail on high-density displays.
+
+The optimized local build and TypeScript pass. Full lint reports only the known
+`AsciiPortrait.tsx` rule failure; changed TypeScript files pass scoped lint.
+`output/playwright/editorial-local-audit.json` records passing image selection,
+navigation, tabs, gallery, clipboard, mobile menu, reduced-motion, and no-JavaScript
+checks across five widths from 320 to 1440px. No application errors or failed
+requests occurred; the local-only Vercel Analytics endpoint returned its expected
+404. Independent visual checks also covered 375×667 and actual DPR2/DPR3 captures.
+
+The manual accessibility pass sampled 99 text runs without failures or skips.
+A follow-up 375px phone check found one large heading line passing narrowly at
+3.088:1. The mobile artwork's upper fade was extended to 22% to increase that
+margin before release. Each new preview and production deployment requires a
+fresh browser audit; this committed report records local preparation only.
+
+The targeted follow-up in `output/playwright/editorial-mask-result.json` verifies
+the final fade at DPR3. The second heading line now measures 11.604:1 at 375×667
+and 14.964:1 at 390×844. All 12 initial text checks pass without skips; normal
+sticky/story states and fresh reduced-motion layouts remain intact, with no
+overflow or application errors.

@@ -1,131 +1,176 @@
 # Visual assets
 
-The four hero and work-story images are original conceptual data-engineering artwork
-created with the built-in OpenAI image-generation tool. They depict databases,
-tabular datasets, streaming records, transformations, and analytics outputs. These
-are illustrative dataflows, not documentation of an employer’s infrastructure.
-The artwork contains no borrowed brand imagery or logos.
+The four images are original conceptual data-engineering artwork made with the built-in
+OpenAI image-generation tool. A folded graphite-and-silver signal sculpture introduces
+the page; converging event streams and three light data strata illustrate the work stories.
+These are visual metaphors, not diagrams of an employer's infrastructure.
 
-Hero uses `getImageProps` inside a `<picture>` to select the portrait image at widths
-up to 800px and the landscape image above that breakpoint. Work uses responsive
-Next Image components. These images are decorative, with empty alternative text.
-The original `public/profile.jpg` remains the portrait source; personal-project
-illustrations are CSS compositions.
+## Research and art direction
 
-All four selected PNGs were converted with Sharp to WebP at quality 88 and effort 6.
-Conversion preserves dimensions and aspect ratio without resizing, cropping, or
-stretching. The source paths below identify local originals; only the WebP assets
-in `public/` are needed by the application. Manifests under `output/imagegen/` are
-ignored local artifacts.
+The references below were opened and visually inspected before generation on 2026-10-21.
+Their lessons informed original compositions; reference images and brand assets are not
+shipped with the portfolio.
 
-| Asset | Dimensions | Bytes |
+| Primary reference | Applied lesson |
+| --- | --- |
+| [Apple MacBook Pro](https://www.apple.com/macbook-pro/) | A strong silhouette, controlled studio lighting, large imagery and meaningful black space. |
+| [FIELD: IBM Think 2020](https://field.io/work/ibm-think-2020) | Broad parametric surfaces alternate with fine directional lines and quiet gaps. |
+| [FIELD: IBM Generation](https://field.io/work/ibm-generation) | Convey data becoming organized through collective form rather than literal database icons. |
+| [FutureDeluxe: Verizon](https://futuredeluxe.com/work/verizon) | Dark material mass and one illuminated edge give a sculpture visual weight. |
+| [Found: IBM Optics](https://www.found-studio.com/work/ibm-optics/) | Macro framing, selective focus and directional light; its hardware subject was not adopted. |
+| [Stripe Data Pipeline](https://stripe.com/data-pipeline) | Clear grouping, restrained connectors and generous spacing. |
+| [Snowflake architecture](https://docs.snowflake.com/en/user-guide/intro-key-concepts) | Distinct layers communicate a hierarchy. |
+| [Vercel Workflows](https://vercel.com/workflows) | One visual idea per panel and sparse accents keep the technical story readable. |
+
+Two initial beaded-wave hero candidates were rejected as too close to generic data-wave
+imagery. The selected hero instead uses broad satin layers, a strong aperture, restrained
+blue seams and deeper shadow. The mobile image is a separate portrait recomposition.
+The lakehouse image received framing and material refinements to match the final set.
+
+## Files and rendering
+
+| Asset | Native dimensions | Lossless source bytes |
 | --- | --- | --- |
-| `public/data-pipeline-hero.webp` | 1672 × 941 | 112048 |
-| `public/data-pipeline-mobile.webp` | 1122 × 1402 | 89002 |
-| `public/streaming-pipeline.webp` | 1672 × 941 | 93938 |
-| `public/lakehouse-architecture.webp` | 1672 × 941 | 131968 |
+| `public/signal-fold-hero.webp` | 1672 × 941 | 849014 |
+| `public/signal-fold-mobile.webp` | 1122 × 1402 | 735210 |
+| `public/event-stream.webp` | 1672 × 941 | 1074458 |
+| `public/warehouse-strata.webp` | 1672 × 941 | 1206904 |
 
-## Desktop hero
+The generated PNGs were converted to lossless WebP with Sharp, effort 6. No resizing,
+cropping or artificial upscaling was applied. These lossless masters prevent an initial
+lossy encoding step; browsers receive responsive Next Image output at quality 85.
+The configuration explicitly permits qualities 75 and 85, retaining the default for
+other imagery. Hero loading remains eager and high-priority; work images remain lazy.
+The hero's maximum scroll enlargement is 1.16×, with the existing reduced-motion path.
+Work images use centered cover crops; their responsive sizes include the cover width.
 
-- Output: `public/data-pipeline-hero.webp`, 1672 × 941, 112048 bytes.
-- Manifest: `output/imagegen/data-pipeline-hero-manifest.json`.
+The prompts requested larger resolutions, but the tool returned the native dimensions
+listed above. These are not 4K assets. Larger browser image requests cannot invent source
+detail. The original profile photo and CSS project illustrations remain unchanged.
+All four conceptual images have empty alternative text because adjacent page content
+carries their meaning.
 
-### Generation
+## Generation provenance and exact prompts
 
-- Mode: `generate`.
-- Original PNG: `/root/.codex/generated_images/01a15c68-b690-70d3-89a1-af8dfaeda740/exec-94f5a50f-b8ee-460b-bc8a-7c03b87e912b.png` (1672 × 941, 1387620 bytes).
-- Reference images: none.
+Local manifests under `output/imagegen/` preserve source metadata, reference roles,
+conversion checks and discarded explorations. They are ignored development artifacts.
+The original PNG paths below are machine-local provenance; the application consumes
+only the four workspace files listed above.
+
+### Desktop hero
+
+- Mode: built-in image generation, `generate`.
+- Output: `public/signal-fold-hero.webp`.
+- Original PNG: `/root/.codex/generated_images/01a15c68-b690-70d3-89a1-af8dfaeda740/exec-a6acded9-7566-4bc0-ad27-ec15e2336f28.png`.
+- Input reference: `output/playwright/references/field-think2020.jpg` (parametric surface language).
+- Input reference: `output/playwright/references/futuredeluxe-verizon.jpg` (lighting, silhouette and material restraint).
 
 Exact prompt:
 
 ```text
 Use case: stylized-concept.
-Asset type: original landscape hero artwork for an elegant data engineer portfolio.
-Primary request: portray DATA ENGINEERING as a beautifully crafted three-dimensional data pipeline. On a seamless pure-black studio stage, a compact isometric system connects recognizable database cylinders and small stacks of tabular data sheets on the left, a branching directed workflow of translucent square transformation nodes in the center, and a refined columnar data warehouse with a small clean analytics bar arrangement on the right. Thin luminous blue paths carry evenly spaced rectangular data records through the stages, visibly joining and splitting before resolving into ordered rows. Make the connections and organization the subject: a clear visual journey from raw data to trusted analytics.
-Style: premium photorealistic 3D editorial illustration, precise optical glass, frosted pale-blue surfaces, restrained brushed silver edges, exquisite soft edge lighting and subtle floor reflections. Immaculate composition, sophisticated and cinematic, readable at a glance. The components should feel like sculptural data concepts, not electronic devices.
-Composition: wide 16:9 image, whole pipeline centered across the middle 75 percent of the width and middle 60 percent of the height, black breathing room around every edge, low three-quarter perspective that clearly reveals cylinders, table rows, branching connectors, and final structured data. Dark lower margin supports page text outside the artwork. Keep the central network interesting when enlarged. Restrained black, silver, cool white and azure blue palette. Opaque black background.
-Constraints: no CPU, no processor, no circuit boards or microchips, no computer hardware, no server racks, no buildings, no mechanical engine, no fiber-optic hair, no people. No text, letters, numbers, logos, watermark, screenshots, UI windows, fake code, or brand assets.
+Asset: original premium data-engineer portfolio hero artwork, wide 16:9, requested native3840x2160 resolution.
+Reference image1: ONLY the refined parametric surface language and deliberate gaps of FIELD's data art, not its composition, colors, typography or logos. Reference image2: ONLY monumental dark framing, satin materials, subtle light and bold sculptural silhouette. Create a completely new artwork.
+Concept: a single sculptural DATA FOLD. Think of thousands of data channels compressed into thirty perfectly spaced, exceedingly thin satin-graphite lamellae. Together these flat ribbon-like layers twist through ONE asymmetric open fold, like an architectural paper study made at monumental scale. The band crosses from lower-left toward upper-right, turns once, and returns behind itself to create a generous teardrop-shaped aperture of absolute black. It must be a BROAD CONTINUOUS SURFACE with clean precisely ruled edges, not a bundle of wires, particle wave or loose strings.
+At the forward fold, a narrow crisp silver-white edge reveals the stacked layers; a very restrained electric-blue illuminated seam runs through a few interior layers, suggesting a reliable data stream. The majority of the form is beautiful deep charcoal, soft satin silver and black. Broad calm untextured regions, exquisite controlled fine parallel edge detail. The form looks physically plausible and carefully art-directed, simultaneously mathematical and tactile.
+Camera/light: close three-quarter macro photograph from slightly below the fold, 85mm lens feel, studio strip softbox outlining only one dominant ridge. Large purposeful shadow regions. No glowing fog, mirrored floor or surface reflections. Main focal edge sharply resolved, far layers gently out of focus. High contrast but subtle tonal gradients. Serious contemporary design-studio campaign image.
+Framing: single complete sculptural form with asymmetrical balance, occupying central75% of image width and central70%height. Keep pureblack margins around the outer silhouette, especially bottom18%. Opaque seamless true-black background that blends into a black webpage.
+Strict avoid: no dots, beads, ball chains, repeated wave humps, ocean wave, sound equalizer, infinity-loop symbol, yarn, neon tubes, stockbigdata illustration, glass-cylinder databases, cubes, charts, chips, laptops, gadgets, UI, words, symbols, logos, watermark, human, planet or rainbow. Do not show a copy of a reference. The output should be a singular iconic data sculpture with a bold quiet silhouette, not a busy diagram.
 ```
 
-## Mobile hero
+### Mobile hero
 
-- Output: `public/data-pipeline-mobile.webp`, 1122 × 1402, 89002 bytes.
-- Manifest: `output/imagegen/data-pipeline-hero-manifest.json`.
-
-### Edit
-
-- Mode: `edit`.
-- Original PNG: `/root/.codex/generated_images/01a15c68-b690-70d3-89a1-af8dfaeda740/exec-036d84c2-55e1-4b56-9724-1b97b2555058.png` (1122 × 1402, 1175079 bytes).
-- Reference: `/root/.codex/generated_images/01a15c68-b690-70d3-89a1-af8dfaeda740/exec-94f5a50f-b8ee-460b-bc8a-7c03b87e912b.png`.
+- Mode: built-in image generation, `edit`.
+- Output: `public/signal-fold-mobile.webp`.
+- Original PNG: `/root/.codex/generated_images/01a15c68-b690-70d3-89a1-af8dfaeda740/exec-a85bab54-70d2-447e-a927-c0295e5bc7d9.png`.
+- Input reference: `/root/.codex/generated_images/01a15c68-b690-70d3-89a1-af8dfaeda740/exec-a6acded9-7566-4bc0-ad27-ec15e2336f28.png` (edit target, portrait recomposition).
 
 Exact prompt:
 
 ```text
 Use case: precise-object-edit.
-Asset type: portrait mobile hero artwork for the same data engineer portfolio.
-Input image1 is the EDIT TARGET. Preserve its data-engineering subject, optical-glass and brushed-silver materials, azure rectangular data records, database cylinders, table-sheet stacks, transformation cubes, columnar warehouse and analytics bars, pure-black seamless studio with restrained reflections and elegant lighting.
-Primary request: RECOMPOSE the pipeline as a compact VERTICAL top-to-bottom journey in a portrait 4:5 canvas, not a crop of the landscape artwork. At upper left and upper right place two modest source database/table groups; in the middle, thin blue paths flow down through a small branching network of three to four frosted transformation nodes; at bottom center the paths converge into one larger ordered warehouse cylinder with a small refined bar-chart sculpture beside it. Maintain visible separation and clean logical links between stages. Only one output warehouse. Low three-quarter perspective, all elements fully visible and uncropped, main forms within the central80percent width and middle70percent height. Generous true-black breathing room above, below and beside the complete system so it can blend into a black webpage. Recognizable data workflow at phone size, exceptionally polished photorealistic3D conceptual art.
-No words, text, letters, digits, logos, watermark, UI windows, screenshots, fake code, people, processorchips, circuitboards, serverracks, machines, or buildings. Keep the background opaque pure black and keep the subject unmistakably a data-engineering pipeline.
+Asset: portrait mobile hero for the same premium data-engineer portfolio. Output portrait4:5, native2048x2560 if supported.
+Image1 is the EDIT TARGET. Preserve this exact sculptural language: broad layered satin-graphite lamellae, delicate parallel silver edges, one narrow restrained cobalt-blue seam, physically coherent fold, richblack negative space, one crisp white studio-lit ridge. No dots or beaded lines.
+Change ONLY the composition to portrait. Recompose the complete single data-fold sculpture as a strong tall diagonal rising from bottom-left toward upper-right with ONE elongated open teardrop aperture through the center. Keep the essential broad twist fully visible within the central85%width; let only the two thin continuation tails approach the edges. Keep the single illuminated crest around the upper-middle and the foreground layers toward lower-middle. Leave approximately10%clear black above and12%below. A memorable bold silhouette and calm broad charcoal surfaces that are readable on a390px phone. Keep the exact materials, directional detail and silver/blue/black palette of the target. Keep the center of the aperture truly black.
+Preserve the controlled studio light, sharp focal edges and gentle depth of field. No extra objects, no additional loops, no UI, words, letters, digits, logos, watermarks, infographic icons, cylinders, cubes, charts, laptops, chips, or stars. Opaque pureblack background. This is a purposeful vertical recomposition, not a horizontal crop or a stretched image.
 ```
 
-## Streaming work story
+### Streaming work story
 
-- Output: `public/streaming-pipeline.webp`, 1672 × 941, 93938 bytes.
-- Manifest: `output/imagegen/streaming-pipeline-manifest.json`.
-
-### Step 1: Generation
-
-- Mode: `generate`.
-- Original PNG: `/root/.codex/generated_images/01a15c6a-470c-7243-912f-d302d472ab8c/exec-1e1ec4ac-c632-414d-96b9-89159f877e2e.png` (1672 × 941, 1527064 bytes).
-- Reference images: none.
+- Mode: built-in image generation, `generate_with_visual_references`.
+- Output: `public/event-stream.webp`.
+- Original PNG: `/root/.codex/generated_images/01a15c6a-470c-7243-912f-d302d472ab8c/exec-df209fd2-d3bb-42c1-a894-8b4ddbdbe056.png`.
+- Input reference: `/root/ram/coding/nalam-portfolio/output/playwright/references/futuredeluxe-verizon.jpg` (Lighting and camera reference only).
+- Input reference: `/root/ram/coding/nalam-portfolio/output/playwright/references/field-think2020.jpg` (Material and line-hierarchy reference only).
 
 Exact prompt:
 
 ```text
 Use case: stylized-concept.
-Asset type: original landscape 16:9 feature artwork for a premium data-engineering portfolio.
-Scene/backdrop: seamless pure-black studio with a subtle dark reflective floor.
-Subject: a clearly understandable streaming DATA PIPELINE rendered as a refined three-dimensional information sculpture. Small individual translucent event-record cards arrive in three neat streams, each card visibly subdivided into a few simple fields using embossed bars rather than writing. These streams enter exactly THREE distinct upright frosted-glass broker/partition containers holding tidy stacks of event cards. Thin luminous blue connections then lead through TWO open glass transform-stage frames, where the record cards visibly become uniform, and converge into a clean structured output: one precise rectangular table-like lattice of aligned rows and columns. Keep the records, three partition containers, connecting paths, transform stages, and ordered output visually distinguishable at a glance.
-Composition/framing: wide 16:9 view, restrained elevated three-quarter camera. Arrange the complete connected pipeline compactly around the CENTER of the canvas, with all essential stages inside the central 65 percent of image width and central 70 percent of image height. Incoming records may gently trail beyond that area. The main three-node pipeline and structured output must remain meaningful in a centered mobile crop. Clear generous gaps between stages, balanced negative black space around the sculpture, no labels needed to read the progression.
-Style/medium: immaculate photorealistic premium 3D studio visualization, realistic frosted and clear optical glass, thin brushed-silver rims, restrained luminous azure-blue records and connections, clean white edge highlights, subtle physically plausible reflections. Sophisticated, calm, dimensional and precise. Silver, glass, black and restrained blue only.
-Constraints: communicate data engineering through records, partitions, transformations and structured data. No CPU, processor, chip, motherboard, circuit-board, micro-circuit traces, hardware chassis, server rack, engine, fiber-optic cable bundles, planetary objects or spheres. No text, letters, numbers, labels, logos, watermark, UI screens, dashboards, fake software screenshot or code. No decorative rainbow or cyberpunk clutter. Opaque black background.
+Asset type: original cinematic macro artwork for the streaming-data work story of a premium data-engineering portfolio. This must be a new artwork, not a recreation of either reference.
+Reference image 1 is a lighting and camera reference only: monumental near-black surfaces, one precisely controlled white edge light, restrained tonal depth. Reference image 2 is a material and line-hierarchy reference only: broad quiet translucent planes alongside fine organized traces. Do not reproduce the reference shapes, typography, composition, or branding.
+Primary subject: a macro view of THREE broad, thin signal bands converging at the center into ONE precisely aligned laminar flow. The streams are abstract information made spatial, not physical machinery. Each incoming band is a calm graphite-to-silver satin plane with extremely fine parallel channels and only a few discrete cobalt signal marks embedded within it. The bands approach at slightly different heights and angles, align through one elegant central fold, then continue as a single refined sheet of ordered channels. Make this convergence visually unmistakable, with generous black gaps between the incoming bands and one sharp focal ridge where they join.
+Composition: landscape 16:9, requested native resolution 3072 by 1728 pixels or higher if supported. Close oblique camera with cinematic depth, focal convergence centered within the central 45 percent of the image so a portrait center crop remains meaningful. Broad material surfaces and a bold directional silhouette dominate; microdetail is subordinate. The channels lead into and out of the frame, but the central convergence is fully visible. Approximately one third of the frame is unlit deep-black negative space. The scene must feel monumental and carefully photographed, not like a small model on a tabletop.
+Lighting and materials: physically convincing fine satin silver and dark translucent graphite, a single soft white strip reflection and a restrained cobalt seam. Crisp center, gentle depth-of-field falloff in the far foreground and far background. Large dark tonal intervals, controlled reflections, no glowing fog. Background opaque seamless near-black, with no visible floor, horizon, pedestal, or reflection plane.
+Constraints: original abstract data-flow artwork. No repeated sine-wave hills, no symmetrical wave ocean, no beaded strings, no fiber-optic spaghetti or cable bundle, no rainbow, no glitter everywhere. No boxes, cylinders, servers, CPUs, chips, circuit boards, mechanical parts, arrow diagrams, charts, UI windows, fake screenshots, code, labels, text, numbers, letters, logos, watermarks, people, planets, or stars. Do not add broad empty blur in place of the central structure. Preserve clear directional ordering, three streams becoming one.
 ```
 
-### Step 2: Edit
+### Lakehouse work story — step 1
 
-- Mode: `edit`.
-- Original PNG: `/root/.codex/generated_images/01a15c6a-470c-7243-912f-d302d472ab8c/exec-5c567392-cb57-44fe-aa6f-0afb6b12a257.png` (1672 × 941, 1155630 bytes).
-- Reference: `/root/.codex/generated_images/01a15c6a-470c-7243-912f-d302d472ab8c/exec-1e1ec4ac-c632-414d-96b9-89159f877e2e.png`.
+- Mode: built-in image generation, `generate`.
+- Output: `public/warehouse-strata.webp`.
+- Original PNG: `/root/.codex/generated_images/01a15c69-37a0-78b1-942b-5c899da0f076/exec-5ee8c010-b371-4413-9c3d-443fe444b77a.png`.
+- Input reference: `/root/.codex/generated_images/01a15c68-b690-70d3-89a1-af8dfaeda740/exec-0dbf5de1-0295-403a-ae71-513b5a67f9ef.png` (visual reference).
+- Input reference: `/root/ram/coding/nalam-portfolio/output/playwright/references/snowflake-architecture-original.png` (visual reference).
+- Input reference: `/root/ram/coding/nalam-portfolio/output/playwright/references/stripe-warehouse-diagram.png` (visual reference).
+
+Exact prompt:
+
+```text
+Use case: stylized-concept.
+Asset type: original light-background editorial work-story artwork for a premium data-engineering portfolio.
+Input images: image 1 is a STYLE AND PALETTE reference only: sophisticated fine silver data filaments, disciplined azure highlights and exceptional physical light. Image 2 is a HIERARCHY reference only: three clearly separated horizontal architectural levels. Image 3 is a SPACING reference only: precise grouping, very restrained connectors and generous negative space. Do not copy any reference logo, text, symbol, icon, diagram layout, branded content, or UI.
+Primary request: create a new, visually sophisticated architectural sculpture of curated DATA STRATA. Exactly THREE broad, extremely thin planes made from fine ordered silver-white data lines and repeated short row marks. They are airy surfaces of aligned filaments rather than solid slabs. Separate the planes deliberately in a shallow, slightly staggered stack so every level reads clearly as part of one confident silhouette. The first layer is somewhat loosely ordered, the second precise parallel rows, and the third an exceptionally clean unified field. A very small number of fine azure paths travel between the levels, suggesting refinement of data. Their routing is controlled and minimal. Let the fine-line language echo the flowing hero reference while the overall form is calmer and architectural.
+Scene and materials: seamless white to very light silver studio, soft matte surface, gentle contact shadows only. Silver-white linework, satin pale metal, a hint of translucent milky optical material, restrained azure accents. Elegant realistic lighting, precise shallow shadows between layers, immaculate anti-aliased edges, rich fine detail without clutter. No mirror reflection or glossy floor.
+Composition: native 3072 by 1728 pixels, landscape 16:9. Restrained elevated three-quarter perspective. Keep the whole sculpture centered within the middle 62 percent of the canvas width and middle 68 percent of its height; generous clean margins. Strong readable three-level silhouette at phone scale. Broad planes with lightly softened corners, shallow depth, no chunky frames, no miniature side objects. Sophisticated editorial architectural abstraction rather than an infographic or a physical appliance.
+Strict constraints: no cylinders, cubes, bar charts, charts of any kind, boxed toys, glass database objects, buildings, server racks, hardware, processors, motherboards, circuit boards, ports or cables. No text, letters, numbers, labels, logos, watermarks, screens, dashboards, fake UI or code. Exactly three data planes, with deliberate clean gaps. Opaque light background.
+```
+
+### Lakehouse work story — step 2
+
+- Mode: built-in image generation, `edit`.
+- Output: `public/warehouse-strata.webp`.
+- Original PNG: `/root/.codex/generated_images/01a15c69-37a0-78b1-942b-5c899da0f076/exec-77174846-681c-4084-a041-6679f179f89e.png`.
+- Input reference: `/root/.codex/generated_images/01a15c69-37a0-78b1-942b-5c899da0f076/exec-5ee8c010-b371-4413-9c3d-443fe444b77a.png` (visual reference).
 
 Exact prompt:
 
 ```text
 Use case: precise-object-edit.
-Input image 1 is the edit target. Preserve this exact streaming-data concept and its photorealistic glass, brushed silver, blue and black material treatment: THREE partition queues containing stacked event-record cards, TWO transform gates, connected record streams, and ONE structured table output. No text or labels.
-Change ONLY the framing and compact arrangement. The present pipeline is too spread out horizontally. Pull the camera back and gather the connected nodes closer together so all three partition queue boxes, both transform gates, and the ENTIRE output table fit inside the central 60 percent of the 16:9 canvas width, from roughly20 percent to80 percent, and central70 percent of its height. The boxes and output table should still be large and crisp enough to distinguish. Let only a few incoming event cards trail into the otherwise mostly empty left margin. Leave a wide pure-black safety margin to the right of the complete output table, approximately20 percent of image width. Preserve clear gaps and short blue links between stages so the sequence remains legible.
-The purpose is a centered mobile crop: every essential stage must remain visible when the leftmost19 percent and rightmost19 percent of this wide image are hidden. Keep the wide16:9 canvas and seamless black background, fine reflections, restrained blue, and the same conceptual data pipeline. Do not add any objects, words, letters, numbers, labels, logos, UI, code, CPU hardware, circuit boards, or server racks.
+Input image 1 is the EDIT TARGET.
+Change ONLY the camera distance and framing. Preserve the exact three separated silver-white filament data strata, their elegant shallow waves, fine azure routes between levels, material detail, matte-white background, contact shadows, and lighting.
+Pull the camera back so the ENTIRE sculpture, including all left and right tips of all THREE planes, fits inside the central 62 percent of the canvas width, approximately x19 percent to x81 percent, and the central 66 percent of its height. Keep it centered with generous clean white negative space at every edge. The planes must remain distinct and crisp with the same three-level silhouette. This image will be center-cropped on a phone, so the complete form needs those real side margins.
+Keep landscape16:9. Preferred native output3072×1728 pixels; do not stretch or upscale the existing pixels. Preserve fine line detail through native rendering.
+No additions or redesign: exactly three airy data planes, restrained blue connections, no text, labels, logos, cylinders, cubes, charts, hardware, fake UI, mirror floor, or other objects.
 ```
 
-## Lakehouse work story
+### Lakehouse work story — step 3
 
-- Output: `public/lakehouse-architecture.webp`, 1672 × 941, 131968 bytes.
-- Manifest: `output/imagegen/lakehouse-architecture-manifest.json`.
-
-### Generation
-
-- Mode: `generate`.
-- Original PNG: `/root/.codex/generated_images/01a15c69-37a0-78b1-942b-5c899da0f076/exec-efc85705-ad00-4711-8719-005ba9cf52e5.png` (1672 × 941, 1834407 bytes).
-- Reference images: none.
+- Mode: built-in image generation, `edit`.
+- Output: `public/warehouse-strata.webp`.
+- Original PNG: `/root/.codex/generated_images/01a15c69-37a0-78b1-942b-5c899da0f076/exec-885f5383-0c5e-4175-8981-0fd90549f9a4.png`.
+- Input reference: `/root/.codex/generated_images/01a15c69-37a0-78b1-942b-5c899da0f076/exec-77174846-681c-4084-a041-6679f179f89e.png` (visual reference).
+- Input reference: `/root/.codex/generated_images/01a15c68-b690-70d3-89a1-af8dfaeda740/exec-a6acded9-7566-4bc0-ad27-ec15e2336f28.png` (visual reference).
 
 Exact prompt:
 
 ```text
-Use case: stylized-concept.
-Asset type: original wide 16:9 artwork for a data engineer's portfolio work story.
-Primary request: a premium, unmistakably DATA ENGINEERING lakehouse architecture rendered as a compact, elegant physical model. The subject must read as organized datasets, databases, transformation and analytics, never as computer hardware.
-Scene/backdrop: seamless white to very light silver studio, pale matte floor, gentle realistic contact shadows and a little clean negative space.
-Subject: at the center, three staggered, partially separated translucent tabular data sheets with precise visible rows and columns of small neutral geometric cells, expressing raw, cleaned and curated datasets through increasing order. Connect these layers with restrained clear-blue dataflow paths. Beside and behind the central sheets are two recognizable upright frosted-glass DATABASE CYLINDERS with three stacked circular tiers and clean elliptical tops, softly illuminated ice blue. On the other side are a small orderly warehouse-style stack of organized dataset trays and one elegant analytics output module formed from a few solid blue rising bars. These are physical conceptual forms, not screens or user interfaces. A small number of blue connectors make the input-to-transformation-to-output logic legible.
-Composition/framing: centered three-quarter isometric view, wide landscape 16:9. Keep the main database cylinders, layered tables and connectors together in the central 60 percent of the frame, so a mobile center crop still clearly conveys data engineering. Full object visible with balanced margins, no tiny distant parts.
-Style/materials: immaculate high-end studio 3D product rendering, polished minimal design, frosted and translucent glass, restrained brushed silver supports, precise bevels, subtle refraction, soft white edge highlights. Visually clear, quiet, sophisticated, physically coherent. White, silver and translucent ice blue, with stronger azure reserved for the data connections.
-Constraints: original conceptual architecture; no text, letters, numbers, labels, logos or watermarks. No CPU, processor chips, motherboards, circuit-board traces, server racks, ports, cables, branded products, people, fake code, screens or fake UI. Opaque light background.
+Use case: precise-object-edit.
+Asset type: original light-background editorial lakehouse work-story artwork.
+Input image 1 is the EDIT TARGET. Input image 2 is a MATERIAL-ONLY reference from the portfolio's selected hero. Use its calm satin silver surfaces, fine lamellar edge detail and minimal blue accent, but do not import its dark background or looped composition.
+Change ONLY the surface language and material treatment of image 1. Preserve exactly THREE distinct architectural data layers, their hierarchy, generous white gaps, camera angle, centered placement and outer margins, white studio background, soft matte-floor contact shadow, and a few thin blue connections between levels.
+Replace all beads, dots, pearl chains, point particles and busy luminous filaments with broad, calm, continuous satin-silver LAMELLAR DATA PLANES. Each level is a thin composed plane with very fine crisp parallel edge or row detail, like a meticulously machined architectural scale model. Use the restrained broad folded silver material of image 2. Three planes only: the upper plane may be slightly irregular, the middle more organized, the bottom exceptionally precise. Keep gentle low curvature and shallow depth; the three levels should feel architectural rather than fabric.
+Reduce the azure to a very narrow seam and the few thin inter-layer routing lines. Almost no emitted glow: clean blue pigment or a tiny light seam, with physically convincing soft silver highlights. No sparkles, glitter, starbursts, beading, dots, glowing mesh, or cloth appearance. Fine row detail must support broad calm silhouettes rather than overpower them.
+Lighting and composition invariants: opaque seamless white/light-silver background, restrained elegant studio light, readable separation between the three layers, strong centered silhouette at phone scale, same camera and generous side margins as image 1. No mirrored floor.
+No cubes, cylinders, charts, hardware, servers, screens, fake UI, code, text, labels, numbers, logos, watermark or added objects. Keep landscape 16:9. Prefer native 3072 by 1728 pixels; do not upscale or stretch input pixels.
 ```

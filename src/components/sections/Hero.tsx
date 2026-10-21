@@ -6,19 +6,21 @@ import "@/components/sections/hero.css";
 
 export function Hero() {
   const { props: desktop } = getImageProps({
-    src: "/data-pipeline-hero.webp",
+    src: "/signal-fold-hero.webp",
     alt: "",
     width: 1672,
     height: 941,
+    quality: 85,
     sizes: "(min-width: 1600px) 1280px, (max-width: 800px) 100vw, 1120px",
     loading: "eager",
     fetchPriority: "high",
   });
   const { props: mobile } = getImageProps({
-    src: "/data-pipeline-mobile.webp",
+    src: "/signal-fold-mobile.webp",
     alt: "",
     width: 1122,
     height: 1402,
+    quality: 85,
     sizes: "(max-width: 540px) 110vw, 600px",
     loading: "eager",
     fetchPriority: "high",

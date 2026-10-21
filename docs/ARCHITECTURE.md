@@ -36,18 +36,20 @@ photo supplies the social preview image, and `public/brand.svg` supplies the ico
 | CopyEmail | Clipboard interaction and accessible success/error feedback |
 
 Hero stays a Server Component and uses `getImageProps` to build an eager, high-priority
-`<picture>`. Screens up to 800px wide receive the portrait `/data-pipeline-mobile.webp`;
-wider screens receive `/data-pipeline-hero.webp`. The browser selects an optimized source
-for the active art direction. `HeroVisual` receives the image and both copy stages
-as server-rendered children.
+`<picture>`. Screens up to 800px wide receive the portrait `/signal-fold-mobile.webp`;
+wider screens receive `/signal-fold-hero.webp`. Both request quality 85, and the browser
+selects a responsive optimized source for the active art direction. `HeroVisual`
+receives the image and both copy stages as server-rendered children.
 
-Work maps `streaming-analytics` and `aws-data-platform` to `/streaming-pipeline.webp` and
-`/lakehouse-architecture.webp`. Each story has a responsive Next Image above its
-high-level summary and technology list. All four images depict conceptual dataflows:
-databases, tabular datasets, transformation stages, and analytics outputs. They are
-decorative artwork; prompts and conversion details are in [visual assets](ASSETS.md). About
-renders the real profile photo at `/profile.jpg`, with explicit dimensions and lazy
-loading.
+Work maps `streaming-analytics` and `aws-data-platform` to `/event-stream.webp` and
+`/warehouse-strata.webp`. Each story has a responsive Next Image at quality 85 with
+a centered cover crop, above its high-level summary and technology list. The artwork
+depicts a folded signal sculpture, converging streams, and layered data strata;
+these are abstract concepts, not employer architecture diagrams. Lossless WebP
+sources retain their generated dimensions. `next.config.ts` allows qualities 75 and
+85, preserving the default for other images. Prompts and native dimensions are in
+[visual assets](ASSETS.md). About renders the real profile photo at `/profile.jpg`,
+with explicit dimensions and lazy loading.
 
 Pass server-rendered children into `Reveal` when a section needs an entrance effect.
 Keep content in `src/content/site.ts`, including the `editorial` export for headings,
@@ -56,8 +58,9 @@ labels, and interaction messages.
 ## Motion and reduced motion
 
 `HeroVisual` measures progress through a scroll track containing a sticky stage.
-Bounded CSS variables fade the introduction, scale and dim the artwork, reveal the
-second story, and advance a decorative progress line. Scrolling stays native.
+Bounded CSS variables fade the introduction, scale the artwork from 1× to 1.16×,
+dim it, reveal the second story, and advance a decorative progress line. Scrolling
+stays native; the restrained zoom avoids excessive enlargement of the source image.
 An intersection observer limits updates to the nearby hero; scroll, resize, and
 pageshow events schedule at most one pending animation frame. There is no idle loop
 or per-frame React state. Cleanup removes listeners and cancels pending work.

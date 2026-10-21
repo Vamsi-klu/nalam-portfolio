@@ -5,8 +5,8 @@ import { editorial, work } from "@/content/site";
 import "@/components/sections/work.css";
 
 const artwork: Record<string, string> = {
-  "streaming-analytics": "/streaming-pipeline.webp",
-  "aws-data-platform": "/lakehouse-architecture.webp",
+  "streaming-analytics": "/event-stream.webp",
+  "aws-data-platform": "/warehouse-strata.webp",
 };
 
 export function Work() {
@@ -39,7 +39,8 @@ export function Work() {
                   src={artwork[item.id]}
                   alt=""
                   fill
-                  sizes="(min-width: 1264px) 1200px, (max-width: 370px) 445px, (max-width: 700px) max(534px, calc(100vw - 48px)), calc(100vw - 64px)"
+                  quality={85}
+                  sizes="(min-width: 1264px) 1200px, (max-width: 370px) 445px, (max-width: 700px) max(534px, calc(100vw - 48px)), (max-width: 800px) calc(100vw - 48px), calc(100vw - 64px)"
                   className="work-story-image"
                 />
               </div>

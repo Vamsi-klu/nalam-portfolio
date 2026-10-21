@@ -53,7 +53,7 @@
     linear-gradient(
       to bottom,
       transparent,
-      var(--black) 8%,
+      var(--black) var(--art-mask-start, 8%),
       var(--black) 80%,
       transparent
     );
@@ -223,6 +223,7 @@
     height: calc(175svh - 52px);
   }
   .hero-artwork {
+    --art-mask-start: 22%;
     top: 105px;
     width: min(600px, 110%, calc((100svh - 220px) * 0.8));
     aspect-ratio: 1122 / 1402;

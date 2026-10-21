@@ -34,9 +34,6 @@
 .work-story-image {
   object-fit: cover;
 }
-.work-story-streaming-analytics .work-story-image {
-  object-position: 50% 60%;
-}
 .work-story-copy {
   display: grid;
   grid-template-columns: 0.95fr 1.05fr;
@@ -722,9 +719,6 @@
   }
   .work-story-media {
     height: 300px;
-  }
-  .work-story-streaming-analytics .work-story-image {
-    object-position: 60% 50%;
   }
   .work-story-copy {
     grid-template-columns: 1fr;

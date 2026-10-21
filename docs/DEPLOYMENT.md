@@ -25,6 +25,12 @@ Next.js builds check TypeScript but do not run ESLint. The unused
 record it separately and check that changes introduce no additional errors. These
 commands are a validation procedure, not a record of a completed deployment.
 
+Commit the four lossless WebP sources in `public/`: `signal-fold-hero.webp`,
+`signal-fold-mobile.webp`, `event-stream.webp`, and `warehouse-strata.webp`. The
+application requests responsive optimized variants at quality 85; `next.config.ts`
+allows both 75 and 85. Verify the deployed optimizer responses as well as the source
+files, since source quality alone does not establish delivered image quality.
+
 ## Canonical URL and metadata
 
 `site.domain` in `src/content/site.ts` is the URL source of truth. `layout.tsx` uses
@@ -52,8 +58,12 @@ Test every deployed revision in a real browser:
   panel is reachable and the card does not jump in height.
 - Scroll the personal-project gallery by touch, keyboard, and its previous/next
   controls; check both ends of the track.
-- Scroll through the hero and inspect the data-pipeline image transform, then repeat with
-  reduced motion enabled and confirm the image stays still.
+- Scroll through the hero and inspect the folded-signal artwork at the start,
+  transition, end, and on scrolling back. Confirm the 1.16× maximum zoom retains
+  clear detail, then repeat with reduced motion enabled and confirm the image stays still.
+- Check that mobile loads the portrait hero composition and that centered work-image
+  crops retain the streaming convergence and layered strata. Inspect optimized image
+  loading, dimensions, and quality at desktop and phone pixel densities.
 - Check the page with JavaScript disabled for visible content and usable links.
 - Test email copying and its failure feedback, mail/social links, public PRs, and
   personal-project links. Keep unavailable destinations out of the interface.
