@@ -1,12 +1,13 @@
 import Image from "next/image";
 import { ChevronRight } from "lucide-react";
 import { Reveal } from "@/components/motion/Reveal";
+import { WorkVisual } from "@/components/motion/WorkVisual";
 import { editorial, work } from "@/content/site";
 import "@/components/sections/work.css";
 
 const artwork: Record<string, string> = {
-  "streaming-analytics": "/event-stream.webp",
-  "aws-data-platform": "/warehouse-strata.webp",
+  "streaming-analytics": "/event-stream-4k.webp",
+  "aws-data-platform": "/warehouse-strata-4k.webp",
 };
 
 export function Work() {
@@ -34,16 +35,16 @@ export function Work() {
               key={item.id}
               className={`work-story work-story-${item.id}`}
             >
-              <div className="work-story-media">
+              <WorkVisual>
                 <Image
                   src={artwork[item.id]}
                   alt=""
                   fill
-                  quality={85}
-                  sizes="(min-width: 1264px) 1200px, (max-width: 370px) 445px, (max-width: 700px) max(534px, calc(100vw - 48px)), (max-width: 800px) calc(100vw - 48px), calc(100vw - 64px)"
+                  quality={95}
+                  sizes="(min-width: 1264px) 1344px, (max-width: 370px) 498px, (max-width: 700px) max(598px, calc(112vw - 53.76px)), (max-width: 800px) calc(112vw - 53.76px), calc(112vw - 71.68px)"
                   className="work-story-image"
                 />
-              </div>
+              </WorkVisual>
               <div className="work-story-copy">
                 <div className="work-story-heading">
                   <p className="work-company">{item.org}</p>

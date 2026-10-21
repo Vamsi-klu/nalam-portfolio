@@ -192,3 +192,42 @@ the final fade at DPR3. The second heading line now measures 11.604:1 at 375×66
 and 14.964:1 at 390×844. All 12 initial text checks pass without skips; normal
 sticky/story states and fresh reduced-motion layouts remain intact, with no
 overflow or application errors.
+
+## Native 4K artwork and live 3D revision
+
+This revision replaces the earlier sub-4K generated artwork with original geometry.
+Three landscape masters are rendered directly at 3840×2160; the portrait hero is
+3072×3840. The capture tool verifies the native canvas size and exact decoded pixel
+agreement between PNG and lossless WebP. Responsive delivery requests quality 95.
+The hero poster and interactive renderer share the same geometry source; work
+images receive a restrained scroll-driven pan. Artwork sources and reproduction
+commands are in [visual assets](docs/ASSETS.md).
+
+The hero uses a shorter phone scroll track, a bounded camera orbit, layer separation,
+a maximum 1.06× CSS scale, and a separate copy transition. It retains native scrolling.
+Runtime resolution is bounded at DPR 2 and four million pixels on desktop or two
+million on phones. Static posters remain available for reduced motion, unavailable
+WebGL, context loss, data-saving mode, compact viewports, and disabled JavaScript.
+
+Local real-browser regression checks passed navigation, keyboard tabs, gallery
+controls, clipboard, mobile navigation, responsive images, and overflow at 320,
+390, 768, 1024, and 1440px. No application errors or failed image requests occurred;
+the local Vercel Analytics endpoint returned its expected 404. Motion checks cover
+14 cases, including interrupted loading, canceled image decoding, live preference
+changes, context loss, responsive buffer limits, and image coverage during scrolling.
+Six reverse-scroll WebGL captures matched their forward poses exactly. Frame counts
+stopped after settling and after scrolling offscreen. The browser selected SwiftShader,
+so these results establish rendering behavior, not physical-device frame rates.
+
+The portable audits are committed as `scripts/verify-portfolio.mjs` and
+`scripts/verify-motion.mjs`. Their reports and screenshots are written to ignored
+`output/playwright/`. Each new preview and production deployment requires fresh
+browser verification; this report records local preparation rather than a future
+release result.
+
+The independent local accessibility review found zero violations across nine axe
+states. Manual review passed 99 text-contrast samples without failures or skips;
+the minimum sampled ratio was 4.697:1. Image-background contrast, header/tab
+occlusion, and native-dialog focus checks were reviewed explicitly. Phone DPR3
+inspection led to softer secondary silver rims to reduce bright subpixel shimmer,
+while preserving the blue seams. A visible mobile scroll cue accompanies the CTAs.

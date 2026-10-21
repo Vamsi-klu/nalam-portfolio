@@ -2,25 +2,26 @@ import { getImageProps } from "next/image";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
 import { editorial, site } from "@/content/site";
 import { HeroVisual } from "@/components/motion/HeroVisual";
+import { SignalSculpture } from "@/components/motion/SignalSculpture";
 import "@/components/sections/hero.css";
 
 export function Hero() {
   const { props: desktop } = getImageProps({
-    src: "/signal-fold-hero.webp",
+    src: "/signal-sculpture-4k.webp",
     alt: "",
-    width: 1672,
-    height: 941,
-    quality: 85,
+    width: 3840,
+    height: 2160,
+    quality: 95,
     sizes: "(min-width: 1600px) 1280px, (max-width: 800px) 100vw, 1120px",
     loading: "eager",
     fetchPriority: "high",
   });
   const { props: mobile } = getImageProps({
-    src: "/signal-fold-mobile.webp",
+    src: "/signal-sculpture-mobile-4k.webp",
     alt: "",
-    width: 1122,
-    height: 1402,
-    quality: 85,
+    width: 3072,
+    height: 3840,
+    quality: 95,
     sizes: "(max-width: 540px) 110vw, 600px",
     loading: "eager",
     fetchPriority: "high",
@@ -39,6 +40,7 @@ export function Hero() {
             {/* Next Image props deliver one optimized image for each art direction. */}
             <img {...desktop} alt="" />
           </picture>
+          <SignalSculpture />
         </div>
         <div className="hero-introduction">
           <p className="hero-identity">{site.name}</p>

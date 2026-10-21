@@ -33,6 +33,7 @@
 }
 .work-story-image {
   object-fit: cover;
+  transform: translateY(var(--work-image-shift, 0px)) scale(var(--work-image-scale, 1));
 }
 .work-story-copy {
   display: grid;

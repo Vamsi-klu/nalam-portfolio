@@ -28,30 +28,31 @@ export function HeroVisual({ children }: { children: ReactNode }) {
         preference.matches || travel <= 0
           ? 0
           : Math.min(1, Math.max(0, (top - bounds.top) / travel));
-      const reveal = phase(progress, 0.34, 0.5);
+      const reveal = phase(progress, 0.64, 0.8);
       node.style.setProperty("--scene-progress", String(progress));
       node.style.setProperty(
         "--intro-opacity",
-        String(1 - phase(progress, 0.06, 0.34)),
+        String(1 - phase(progress, 0.06, 0.24)),
       );
       node.style.setProperty(
         "--intro-shift",
-        -phase(progress, 0.06, 0.36) * 32 + "px",
+        -phase(progress, 0.06, 0.24) * 32 + "px",
       );
       node.style.setProperty(
         "--art-scale",
-        String(1 + phase(progress, 0.04, 0.8) * 0.16),
+        String(1 + phase(progress, 0.08, 0.58) * 0.06),
       );
       node.style.setProperty(
         "--art-shift",
-        -phase(progress, 0.1, 0.85) * 8 + "%",
+        -phase(progress, 0.1, 0.6) * 5 + "%",
       );
       node.style.setProperty(
         "--art-opacity",
-        String(1 - phase(progress, 0.14, 0.36) * 0.86),
+        String(1 - phase(progress, 0.54, 0.76) * 0.88),
       );
       node.style.setProperty("--story-opacity", String(reveal));
       node.style.setProperty("--story-shift", (1 - reveal) * 36 + "px");
+      node.dispatchEvent(new CustomEvent("signal-progress", { detail: progress }));
     };
     const schedule = () => {
       if (relevant && !frame) frame = requestAnimationFrame(update);

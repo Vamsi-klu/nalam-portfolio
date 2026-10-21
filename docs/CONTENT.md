@@ -64,6 +64,9 @@ figures consistent if changing counts.
 - `footer.top` labels the return link; `metadata` supplies titles and descriptions.
 
 Hero does not read `site.heroLines`, and it has no typewriter or pause/resume control.
+Its sculpture responds to scroll position and stops when settled; it does not autoplay.
+The decorative canvas adds no visitor-facing copy or factual claims. Both copy stages
+remain server-rendered and readable in the static fallback.
 That array, `editorial.impact`, and earlier hero keys such as `description`, `artTop`,
 `pause`, and `resume` remain unused. Changes to them will not affect the mounted page.
 
@@ -74,8 +77,8 @@ newest first. Full company names appear in horizontal tabs, with labelled panels
 keyboard controls. Keep company names and bullet strings distinct for React keys.
 
 Selected work renders the Meta and Amazon entries as image-led stories with summaries
-and technology lists. Work maps `streaming-analytics` to `/event-stream.webp` and
-`aws-data-platform` to `/warehouse-strata.webp`, rendering only entries with a
+and technology lists. Work maps `streaming-analytics` to `/event-stream-4k.webp` and
+`aws-data-platform` to `/warehouse-strata-4k.webp`, rendering only entries with a
 matching image. Adding a story requires both content and an artwork mapping. The
 retained `oss-data-stack` entry has no mapping because contributions have a dedicated
 section. `WorkItem.metrics` remains in the model but is not rendered by Work.
@@ -83,7 +86,11 @@ section. `WorkItem.metrics` remains in the model but is not rendered by Work.
 The artwork expresses streaming convergence and layered data through original
 abstract forms. It does not document an employer's systems or add technical claims
 to the deliberately high-level work descriptions. Hero uses the separate
-`/signal-fold-hero.webp` and `/signal-fold-mobile.webp` compositions.
+`/signal-sculpture-4k.webp` and `/signal-sculpture-mobile-4k.webp` compositions, with
+a live 3D scene when eligible. The hero geometry lives in `src/lib/signal-scene.ts`;
+the work geometry lives in `scripts/artwork/work-scene.mjs`. Those sources control
+art direction, while `site.ts` remains the source of identity and project facts.
+See [visual assets](ASSETS.md) for the native render pipeline and provenance.
 
 ## Personal builds and public links
 
