@@ -29,7 +29,9 @@ budgets of four million desktop pixels and two million portrait pixels. These
 budgets are separate from the full-resolution exported masters. The live sculpture
 rotates and separates its layers as the visitor scrolls, then stops rendering when
 motion settles or the scene leaves view. Reduced motion, short screens, Save-Data,
-and unavailable or lost WebGL retain the server-rendered poster.
+and unavailable or lost WebGL retain the server-rendered poster. Known software
+graphics drivers also use the poster and CSS scroll effects to avoid blocking the
+page with software 3D rendering.
 
 The profile photograph remains the user's original photo. Personal-project cards
 retain their CSS illustrations. Decorative artwork uses empty alternative text;
@@ -54,8 +56,18 @@ The export script is `scripts/artwork/render.mjs`. It serves local scene modules
 renders each composition in Chromium, verifies dimensions and lossless pixels,
 and writes the four public WebP files. PNGs, hashes, byte counts and the manifest
 are saved under ignored `output/artwork-4k/`. No network artwork or API key is needed.
-The exporter uses software WebGL for reproducibility; the site uses the visitor's
-available WebGL renderer.
+The exporter uses software WebGL for reproducibility; the live 3D enhancement uses
+the visitor's hardware-accelerated WebGL renderer.
+
+The exporter also bakes the studio lighting into `public/signal-environment.bin.gz`.
+This is an original 768×1024 CubeUV lighting atlas, stored as lossless half-float
+RGBA data and compressed with gzip. Its 16-byte header contains `SIGE`, version 1,
+width, and height; the numeric fields and samples are little-endian. The live
+renderer loads this atlas instead of generating lighting on page startup. The
+exporter compares procedural and baked lighting at six desktop/portrait poses
+and requires exact pixel equality. `--environment-only` rebuilds and checks the
+lighting asset without rewriting the four artwork masters. The environment manifest
+is saved beside the image manifest in `output/artwork-4k/`.
 
 ## Art direction and motion references
 

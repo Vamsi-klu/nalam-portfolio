@@ -5,6 +5,8 @@
  * AUDIT_CASES accepts a regex to rerun selected cases after a failure.
  * CHROME_PATH selects a browser executable; otherwise install Playwright Chromium.
  * AUDIT_SOFTWARE_GL=1 explicitly enables SwiftShader for WebGL behavior checks.
+ * The normal capability probe stays unmodified. Subsequent 3D checks may override
+ * renderer-name queries and the context caveat flag; reports retain the actual driver.
  * JSON reports and PNG captures go to output/playwright, which is ignored by Git.
  * Software rendering results do not measure physical GPU throughput or frame rate.
  */
@@ -25,12 +27,36 @@ const report = { label, selectedCases: process.env.AUDIT_CASES || 'all', started
 const browsers = [];
 let storageState;
 let base;
+let forceAcceleratedCapability = false;
+const softwareRenderer = /swiftshader|llvmpipe|softpipe|software rasterizer|software renderer|microsoft basic render/i;
 
 // Only browser/platform boundaries are instrumented; application code is untouched.
 function instrument(options = {}) {
   const probe = window.__motionAudit = {
     draws: 0, frames: 0, glRequests: 0, decodeCalls: 0, decodeRejections: [],
     captureWanted: false, capture: null, renderer: null, context: null, captureQueued: false,
+    capabilityOverride: false, reportedRenderer: null, contextAttributes: null,
+    requestedContextAttributes: null,
+    pendingRaf: 0,
+  };
+  const parameterReaders = new WeakMap();
+  const pendingFrames = new Set();
+  const nativeRequestFrame = window.requestAnimationFrame.bind(window);
+  const nativeCancelFrame = window.cancelAnimationFrame.bind(window);
+  window.requestAnimationFrame = callback => {
+    const id = nativeRequestFrame(now => {
+      pendingFrames.delete(id);
+      probe.pendingRaf = pendingFrames.size;
+      callback(now);
+    });
+    pendingFrames.add(id);
+    probe.pendingRaf = pendingFrames.size;
+    return id;
+  };
+  window.cancelAnimationFrame = id => {
+    pendingFrames.delete(id);
+    probe.pendingRaf = pendingFrames.size;
+    nativeCancelFrame(id);
   };
   if (options.saveData) Object.defineProperty(navigator, 'connection', { configurable: true, value: { saveData: true } });
   const nativeDecode = HTMLImageElement.prototype.decode;
@@ -43,15 +69,32 @@ function instrument(options = {}) {
   };
   const nativeGetContext = HTMLCanvasElement.prototype.getContext;
   HTMLCanvasElement.prototype.getContext = function (kind, ...args) {
-    if (/^webgl/.test(kind) && this.classList.contains('hero-sculpture')) {
+    const heroContext = /^webgl/.test(kind) && this.classList.contains('hero-sculpture');
+    if (heroContext) {
       probe.glRequests++;
+      probe.requestedContextAttributes = args[0] || {};
       if (options.denyWebGL) return null;
     }
-    const context = nativeGetContext.call(this, kind, ...args);
-    if (context && /^webgl/.test(kind) && this.classList.contains('hero-sculpture')) {
+    const effectiveArgs = heroContext && options.forceAcceleratedCapability
+      ? [{ ...args[0], failIfMajorPerformanceCaveat: false }, ...args.slice(1)]
+      : args;
+    const context = nativeGetContext.call(this, kind, ...effectiveArgs);
+    if (context && heroContext) {
       probe.context = context;
+      probe.contextAttributes = effectiveArgs[0] || {};
       const debug = context.getExtension('WEBGL_debug_renderer_info');
-      probe.renderer = debug ? context.getParameter(debug.UNMASKED_RENDERER_WEBGL) : context.getParameter(context.RENDERER);
+      const readParameter = parameterReaders.get(context) || context.getParameter.bind(context);
+      parameterReaders.set(context, readParameter);
+      probe.renderer = readParameter(debug?.UNMASKED_RENDERER_WEBGL ?? context.RENDERER);
+      probe.reportedRenderer = probe.renderer;
+      if (options.forceAcceleratedCapability) {
+        probe.capabilityOverride = true;
+        probe.reportedRenderer = 'Motion audit accelerated capability';
+        context.getParameter = parameter => {
+          if (parameter === context.RENDERER || parameter === debug?.UNMASKED_RENDERER_WEBGL) return probe.reportedRenderer;
+          return readParameter(parameter);
+        };
+      }
     }
     return context;
   };
@@ -82,6 +125,7 @@ function instrument(options = {}) {
               data: thumbnail.toDataURL('image/png'),
               width: this.canvas.width, height: this.canvas.height,
               progress: Number(document.querySelector('.hero-scroll-track').style.getPropertyValue('--scene-progress')),
+              pendingRaf: probe.pendingRaf,
             };
           });
         }
@@ -121,11 +165,15 @@ async function launch(software = false) {
 
 async function fresh(browser, options = {}, probeOptions = {}) {
   const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 2, storageState, ...options });
-  await context.addInitScript(instrument, probeOptions);
+  await context.addInitScript(instrument, { forceAcceleratedCapability, ...probeOptions });
   const page = await context.newPage();
   const errors = [];
+  const requests = { lighting: 0 };
+  page.on('request', request => {
+    if (new URL(request.url()).pathname === '/signal-environment.bin.gz') requests.lighting++;
+  });
   page.on('pageerror', error => errors.push(cleanError(error)));
-  return { context, page, errors };
+  return { context, page, errors, requests };
 }
 
 async function open(page, destination = base) {
@@ -144,16 +192,16 @@ async function settle(page) {
   let stable = 0;
   for (let attempt = 0; attempt < 40; attempt++) {
     await page.waitForTimeout(150);
-    const current = await page.evaluate(() => window.__motionAudit.draws);
-    stable = current === last ? stable + 1 : 0;
-    last = current;
-    if (stable >= 3) return current;
+    const current = await page.evaluate(() => ({ draws: window.__motionAudit.draws, pendingRaf: window.__motionAudit.pendingRaf }));
+    stable = current.draws === last && current.pendingRaf === 0 ? stable + 1 : 0;
+    last = current.draws;
+    if (stable >= 3) return current.draws;
   }
   throw new Error('Renderer did not settle within 6 seconds');
 }
 
 async function scrollHero(page, progress) {
-  return page.evaluate(progress => {
+  const result = await page.evaluate(progress => {
     const track = document.querySelector('.hero-scroll-track');
     const stage = track.firstElementChild;
     const travel = track.offsetHeight - stage.offsetHeight;
@@ -162,6 +210,10 @@ async function scrollHero(page, progress) {
     scrollTo({ top: y, behavior: 'instant' });
     return { y: Math.max(0, y), travel };
   }, progress);
+  if (!await page.evaluate(() => document.hidden)) {
+    await page.waitForFunction(progress => Math.abs(Number(document.querySelector('.hero-scroll-track').style.getPropertyValue('--scene-progress')) - progress) < 0.002, progress, { polling: 100, timeout: 10000 });
+  }
+  return result;
 }
 
 async function bufferCapture(page, name) {
@@ -171,7 +223,7 @@ async function bufferCapture(page, name) {
     window.__motionAudit.captureWanted = true;
     window.dispatchEvent(new Event('resize'));
   });
-  await page.waitForFunction(() => window.__motionAudit.capture !== null, undefined, { timeout: 10000 });
+  await page.waitForFunction(() => window.__motionAudit.capture !== null, undefined, { polling: 100, timeout: 10000 });
   const capture = await page.evaluate(() => window.__motionAudit.capture);
   const png = Buffer.from(capture.data.split(',')[1], 'base64');
   const filename = label + '-' + name + '-buffer.png';
@@ -180,7 +232,10 @@ async function bufferCapture(page, name) {
   let nonempty = 0;
   for (let index = 3; index < raw.length; index += 4) if (raw[index] > 10) nonempty++;
   assert(nonempty > 100, 'WebGL drawing buffer must contain visible pixels');
-  return { raw, evidence: { file: filename, width: capture.width, height: capture.height, progress: capture.progress, hash: crypto.createHash('sha256').update(png).digest('hex') } };
+  const evidence = { file: filename, width: capture.width, height: capture.height, progress: capture.progress, pendingRaf: capture.pendingRaf, hash: crypto.createHash('sha256').update(png).digest('hex') };
+  fs.writeFileSync(path.join(out, label + '-' + name + '-buffer.json'), JSON.stringify(evidence, null, 2));
+  assert.equal(capture.pendingRaf, 0, 'Pose capture must follow the final requested animation frame');
+  return { raw, evidence };
 }
 
 function pixelDifference(left, right) {
@@ -258,23 +313,42 @@ async function main() {
   report.base = base;
   storageState = await warm.context.storageState();
   await warm.page.locator('.hero-artwork img').evaluate(image => image.decode());
-  await warm.page.waitForFunction(() => document.querySelector('.hero-artwork')?.hasAttribute('data-scene-ready') || (window.__motionAudit.glRequests > 0 && !window.__motionAudit.context), undefined, { timeout: 20000 }).catch(() => {});
-  const normalState = await warm.page.evaluate(() => ({ ready: document.querySelector('.hero-artwork').hasAttribute('data-scene-ready'), renderer: window.__motionAudit.renderer, draws: window.__motionAudit.draws, glRequests: window.__motionAudit.glRequests }));
+  await warm.page.waitForFunction(() => document.querySelector('.hero-artwork')?.hasAttribute('data-scene-ready') || (window.__motionAudit.glRequests > 0 && (!window.__motionAudit.context || /swiftshader|llvmpipe|softpipe|software rasterizer|software renderer|microsoft basic render/i.test(window.__motionAudit.renderer))), undefined, { timeout: 20000 }).catch(() => {});
+  await warm.page.waitForTimeout(350);
+  const normalState = await warm.page.evaluate(() => ({ ready: document.querySelector('.hero-artwork').hasAttribute('data-scene-ready'), hasContext: !!window.__motionAudit.context, renderer: window.__motionAudit.renderer, draws: window.__motionAudit.draws, glRequests: window.__motionAudit.glRequests, capabilityOverride: window.__motionAudit.capabilityOverride, contextAttributes: window.__motionAudit.contextAttributes }));
+  report.normalCapability = normalState;
   let browser = normal;
   await run('normal-browser-capability', async () => {
+    assert.equal(normalState.capabilityOverride, false, 'Normal capability probe must preserve the actual renderer');
+    const software = softwareRenderer.test(normalState.renderer || '');
+    if (software) assert.equal(normalState.ready, false, 'Known software drivers must retain the poster');
+    else if (normalState.hasContext) assert.equal(normalState.ready, true, 'An accelerated context must initialize the scene');
+    let fallbackEvidence;
     if (!normalState.ready) {
-      await poster(warm.page);
+      fallbackEvidence = await poster(warm.page);
       assert(normalState.glRequests > 0, 'Normal browser did not attempt WebGL; scene readiness may be broken');
+      assert.equal(warm.requests.lighting, 0, 'Rejected capability must not download the lighting atlas');
+      assert.equal(normalState.draws, 0, 'Rejected capability must not render WebGL frames');
+      await scrollHero(warm.page, 0.45);
+      await warm.page.waitForTimeout(100);
+      const cssMotion = await warm.page.locator('.hero-scroll-track').evaluate(track => ({ progress: Number(track.style.getPropertyValue('--scene-progress')), scale: Number(track.style.getPropertyValue('--art-scale')) }));
+      assert(cssMotion.progress > 0.4 && cssMotion.scale > 1, 'Poster fallback must retain native CSS scroll motion');
+      await scrollHero(warm.page, 0);
+      await idle(warm.page);
+      assert.equal(warm.requests.lighting, 0);
+      fallbackEvidence.cssMotion = cssMotion;
     }
     assert.deepEqual(warm.errors, []);
-    return normalState;
+    return { ...normalState, lightingRequests: warm.requests.lighting, softwareFallbackVerified: software && !normalState.ready, fallbackEvidence };
   });
   await warm.context.close();
   if (!normalState.ready || process.env.AUDIT_SOFTWARE_GL === '1') {
     browser = await launch(true);
-    report.limitations.push('Motion checks use explicitly enabled SwiftShader software WebGL. This validates behavior and rendering, not physical GPU throughput or real-device frame rate. Normal Chrome capability/fallback is recorded separately.');
-  } else if (/swiftshader|software|llvmpipe/i.test(normalState.renderer || '')) {
-    report.limitations.push('Normal Chrome selected a software renderer. These checks do not measure physical GPU throughput or real-device frame rate.');
+    forceAcceleratedCapability = true;
+    report.limitations.push('After the unmodified normal-browser probe, 3D behavior checks explicitly use SwiftShader, request failIfMajorPerformanceCaveat:false, and override only WebGL RENDERER/UNMASKED_RENDERER_WEBGL name queries to pass the accelerated-capability gate. Actual driver names are captured before the override; other WebGL parameters remain unchanged. These results do not measure hardware GPU performance or real-device frame rate.');
+  } else if (softwareRenderer.test(normalState.renderer || '')) {
+    forceAcceleratedCapability = true;
+    report.limitations.push('Subsequent 3D behavior checks request failIfMajorPerformanceCaveat:false and override only renderer-name capability queries on the actual software driver. The unmodified software fallback is tested separately; no hardware GPU performance claim is made.');
   }
 
   await run('matching-canvas-and-poster-masks', async () => {
@@ -285,6 +359,7 @@ async function main() {
       for (const width of [1440, 390]) {
         await session.page.setViewportSize({ width, height: 1000 });
         await ready(session.page);
+        await settle(session.page);
         const evidence = await capacity(session.page);
         assert.equal(evidence.canvasMask, evidence.posterMask, 'Canvas and poster masks should match');
         checks.push({ viewportWidth: width, ...evidence });
@@ -458,6 +533,50 @@ async function main() {
     } finally { await session.context.close(); }
   });
 
+  for (const [name, status, body] of [
+    ['failed-lighting-fetch-poster', 503, 'Studio lighting unavailable'],
+    ['corrupt-lighting-gzip-poster', 200, 'This is not a gzip stream'],
+  ]) {
+    await run(name, async () => {
+      const session = await fresh(browser);
+      let requests = 0;
+      const consoleErrors = [];
+      try {
+        session.page.on('console', message => {
+          if (message.type() !== 'error') return;
+          const text = message.text();
+          if (status === 503 && /^Failed to load resource: the server responded with a status of 503\b/.test(text)) return;
+          consoleErrors.push(cleanError(text));
+        });
+        await session.context.route('**/signal-environment.bin.gz*', async route => {
+          requests++;
+          await route.fulfill({ status, contentType: 'application/octet-stream', headers: { 'cache-control': 'no-store' }, body });
+        });
+        const responseReceived = session.page.waitForResponse(response => new URL(response.url()).pathname === '/signal-environment.bin.gz');
+        await open(session.page);
+        assert.equal((await responseReceived).status(), status);
+        await session.page.waitForTimeout(350);
+        await poster(session.page);
+        for (const progress of [0.2, 0.45, 0]) {
+          await scrollHero(session.page, progress);
+          await session.page.waitForTimeout(90);
+        }
+        await session.page.setViewportSize({ width: 1400, height: 1000 });
+        await session.page.emulateMedia({ reducedMotion: 'reduce' });
+        await session.page.waitForTimeout(80);
+        await session.page.emulateMedia({ reducedMotion: 'no-preference' });
+        await session.page.waitForTimeout(900);
+        const evidence = await poster(session.page);
+        const draws = await session.page.evaluate(() => window.__motionAudit.draws);
+        assert.equal(draws, 0, 'Invalid lighting must never expose a rendered scene');
+        assert.equal(requests, 1, 'Failed lighting must not retry after scroll, resize, or motion preference changes');
+        assert.deepEqual(session.errors, []);
+        assert.deepEqual(consoleErrors, []);
+        return { ...evidence, responseStatus: status, requests, draws, applicationErrors: session.errors, consoleErrors };
+      } finally { await session.context.close(); }
+    });
+  }
+
   await fallback(browser, 'webgl-denied-poster', {}, { denyWebGL: true });
   await fallback(browser, 'save-data-poster', {}, { saveData: true });
   await fallback(browser, 'initial-reduced-motion-poster', { reducedMotion: 'reduce' });
@@ -500,7 +619,10 @@ async function main() {
             checks.push({ width, id, progress, ...evidence });
           }
           await page.emulateMedia({ reducedMotion: 'reduce' });
-          await page.waitForTimeout(80);
+          await page.waitForFunction(selector => {
+            const element = document.querySelector(selector);
+            return matchMedia('(prefers-reduced-motion: reduce)').matches && element.style.getPropertyValue('--work-image-scale') === '1' && element.style.getPropertyValue('--work-image-shift') === '0px';
+          }, '.work-story-' + id + ' .work-story-media', { polling: 100, timeout: 10000 });
           assert.equal(await media.evaluate(element => element.style.getPropertyValue('--work-image-scale')), '1');
           assert.equal(await media.evaluate(element => element.style.getPropertyValue('--work-image-shift')), '0px');
           await page.emulateMedia({ reducedMotion: 'no-preference' });

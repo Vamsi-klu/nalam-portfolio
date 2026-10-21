@@ -7,6 +7,8 @@ export type SignalSceneOptions = {
   portrait?: boolean;
   context?: WebGL2RenderingContext;
   preserveDrawingBuffer?: boolean;
+  environment?: ArrayBuffer;
+  onEnvironmentBake?: (data: ArrayBuffer) => void;
   colors: { paper: string; ink: string; accent: string };
 };
 
@@ -21,6 +23,71 @@ const CROSS_SEGMENTS = 8;
 const LAYERS = 22;
 const clamp = (value: number) => Math.max(0, Math.min(1, value));
 const smooth = (value: number) => value * value * (3 - 2 * value);
+
+function readBakedEnvironment(buffer: ArrayBuffer) {
+  const header = new DataView(buffer);
+  if (
+    buffer.byteLength < 16 ||
+    header.getUint32(0, false) !== 0x53494745 ||
+    header.getUint32(4, true) !== 1
+  ) {
+    throw new Error("Invalid signal environment header");
+  }
+  const width = header.getUint32(8, true);
+  const height = header.getUint32(12, true);
+  const faceSize = height / 4;
+  if (
+    faceSize < 16 ||
+    faceSize > 512 ||
+    !Number.isInteger(Math.log2(faceSize)) ||
+    width !== 3 * Math.max(faceSize, 112) ||
+    buffer.byteLength !== 16 + width * height * 8
+  ) {
+    throw new Error("Invalid signal environment dimensions");
+  }
+
+  const samples = new Uint16Array(buffer, 16);
+  if (new Uint8Array(new Uint16Array([1]).buffer)[0] !== 1) {
+    for (let index = 0; index < samples.length; index++) {
+      samples[index] = header.getUint16(16 + index * 2, true);
+    }
+  }
+  const texture = new THREE.DataTexture(
+    samples,
+    width,
+    height,
+    THREE.RGBAFormat,
+    THREE.HalfFloatType,
+  );
+  texture.mapping = THREE.CubeUVReflectionMapping;
+  texture.colorSpace = THREE.LinearSRGBColorSpace;
+  texture.minFilter = THREE.LinearFilter;
+  texture.magFilter = THREE.LinearFilter;
+  texture.wrapS = THREE.ClampToEdgeWrapping;
+  texture.wrapT = THREE.ClampToEdgeWrapping;
+  texture.flipY = false;
+  texture.generateMipmaps = false;
+  texture.needsUpdate = true;
+  return texture;
+}
+
+function captureEnvironment(
+  renderer: THREE.WebGLRenderer,
+  target: THREE.WebGLRenderTarget,
+) {
+  const samples = new Uint16Array(target.width * target.height * 4);
+  renderer.readRenderTargetPixels(target, 0, 0, target.width, target.height, samples);
+  const buffer = new ArrayBuffer(16 + samples.byteLength);
+  const data = new DataView(buffer);
+  data.setUint32(0, 0x53494745, false);
+  data.setUint32(4, 1, true);
+  data.setUint32(8, target.width, true);
+  data.setUint32(12, target.height, true);
+  for (let index = 0; index < samples.length; index++) {
+    data.setUint16(16 + index * 2, samples[index], true);
+  }
+  return buffer;
+}
 
 function createStudioEnvironment(
   renderer: THREE.WebGLRenderer,
@@ -147,6 +214,8 @@ export function createSignalScene(
     portrait = false,
     context,
     preserveDrawingBuffer = false,
+    environment: environmentData,
+    onEnvironmentBake,
     colors,
   }: SignalSceneOptions,
 ): SignalScene {
@@ -174,6 +243,7 @@ export function createSignalScene(
   const materials: THREE.Material[] = [];
   const bands: THREE.Group[] = [];
   let environment: THREE.WebGLRenderTarget | undefined;
+  let bakedEnvironment: THREE.DataTexture | undefined;
   let isPortrait = portrait;
   let currentProgress = 0;
   let disposed = false;
@@ -184,13 +254,20 @@ export function createSignalScene(
     geometries.forEach((geometry) => geometry.dispose());
     materials.forEach((material) => material.dispose());
     environment?.dispose();
+    bakedEnvironment?.dispose();
     scene.clear();
     renderer.dispose();
   };
 
   try {
-    environment = createStudioEnvironment(renderer, paper, ink, accent);
-    scene.environment = environment.texture;
+    if (environmentData) {
+      bakedEnvironment = readBakedEnvironment(environmentData);
+      scene.environment = bakedEnvironment;
+    } else {
+      environment = createStudioEnvironment(renderer, paper, ink, accent);
+      scene.environment = environment.texture;
+      if (onEnvironmentBake) onEnvironmentBake(captureEnvironment(renderer, environment));
+    }
     scene.environmentIntensity = 1.08;
     const silver = new THREE.MeshStandardMaterial({
       color: paper.clone().multiplyScalar(0.4),
@@ -272,7 +349,8 @@ export function createSignalScene(
       render(currentProgress);
     };
 
-    resize(width, height, pixelRatio, portrait);
+    renderer.setPixelRatio(Math.min(pixelRatio, 2));
+    renderer.setSize(width, height, false);
     return { render, resize, dispose };
   } catch (error) {
     dispose();

@@ -30,6 +30,10 @@ Commit the four lossless WebP sources in `public/`: `signal-sculpture-4k.webp`,
 The application requests responsive optimized variants at quality 95;
 `next.config.ts` allows both 75 and 95. Verify deployed optimizer responses and source
 files, since source quality alone does not establish delivered image quality.
+Also commit `public/signal-environment.bin.gz`, the baked studio lighting required
+by the optional live renderer. The portfolio audit verifies the deployment's bytes
+against the local source and checks its decoded format; the motion audit checks
+missing and corrupt lighting fallbacks.
 
 ## Reproducing native artwork
 
@@ -85,8 +89,12 @@ AUDIT_URL=http://localhost:3000 npm run verify:motion
 They use Playwright's installed Chromium by default; `CHROME_PATH` selects an
 existing Chrome binary. `AUDIT_LABEL` names reports under ignored
 `output/playwright/`. `AUDIT_CASES` optionally filters motion checks by a regular
-expression. The motion audit records WebGL capability first and explicitly labels
-software rendering; it does not establish performance on physical GPUs. Keep
+expression. The motion audit records unmodified WebGL capability and fallback
+behavior first. On a software renderer, subsequent geometry tests explicitly
+override the reported capability at the WebGL boundary while still drawing real
+frames. Reports disclose that override; these tests do not establish performance
+on physical GPUs. Lighthouse uses unmodified browser capabilities, so measurements
+from software-only machines describe the lighter poster mode. Keep
 temporary authenticated URLs in environment variables, out of committed files.
 
 Complete the automated checks with visual review:
@@ -104,7 +112,7 @@ Complete the automated checks with visual review:
   and a clean handoff from the poster to the canvas. Check the 1.06× maximum CSS
   scale and the work-image pan for sharp detail and no exposed image edges.
 - Test cold and live reduced-motion changes, short viewports, reported data-saving
-  mode, unavailable WebGL, and context loss. Static artwork and readable content
+  mode, software graphics, unavailable WebGL, and context loss. Static artwork and readable content
   must remain available. Check resize across portrait/desktop layouts and verify
   the canvas backing-buffer caps: DPR 2, four million pixels on desktop, two million
   on phones. Confirm frames stop after settling, offscreen, and in a hidden document.

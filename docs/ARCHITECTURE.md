@@ -73,10 +73,18 @@ pageshow events schedule at most one pending animation frame. There is no idle l
 or per-frame React state. Cleanup removes listeners and cancels pending work.
 
 `SignalSculpture` waits for the poster to decode before dynamically importing the
-scene and Three.js. Initialization is deferred and requires a visible document and
+scene and Three.js and loading the baked studio lighting in parallel. The compressed
+atlas is decoded with `DecompressionStream`, validated by the scene factory, and
+uploaded as a texture. Studio-light convolution runs only during artwork export.
+Initialization is deferred and requires a visible document and
 artwork, normal motion, a viewport taller than 650px, and no reported data-saving
-preference. A WebGL2 context is required. The ready attribute is applied only after
-a successful frame; initialization errors or context loss leave the poster visible.
+preference. A WebGL2 context is required. It requests `failIfMajorPerformanceCaveat`
+and checks for known software drivers, since some drivers accept that flag while
+still blocking page updates. Software rendering retains the poster and CSS effects
+without downloading Three.js or the lighting atlas. There is no user-agent or
+benchmark detection. The ready attribute is applied only after
+a successful frame; initialization errors, unavailable lighting, or context loss
+leave the poster visible.
 The scene factory in `src/lib/signal-scene.ts` also renders the offline hero masters,
 so geometry, camera framing, and materials have one source.
 

@@ -213,7 +213,7 @@ Local real-browser regression checks passed navigation, keyboard tabs, gallery
 controls, clipboard, mobile navigation, responsive images, and overflow at 320,
 390, 768, 1024, and 1440px. No application errors or failed image requests occurred;
 the local Vercel Analytics endpoint returned its expected 404. Motion checks cover
-14 cases, including interrupted loading, canceled image decoding, live preference
+16 cases, including unavailable or corrupt lighting, interrupted loading, canceled image decoding, live preference
 changes, context loss, responsive buffer limits, and image coverage during scrolling.
 Six reverse-scroll WebGL captures matched their forward poses exactly. Frame counts
 stopped after settling and after scrolling offscreen. The browser selected SwiftShader,
@@ -231,3 +231,20 @@ the minimum sampled ratio was 4.697:1. Image-background contrast, header/tab
 occlusion, and native-dialog focus checks were reviewed explicitly. Phone DPR3
 inspection led to softer secondary silver rims to reduce bright subpixel shimmer,
 while preserving the blue seams. A visible mobile scroll cue accompanies the CTAs.
+
+The initial live renderer produced excessive startup blocking in the software-GPU
+performance audit. The studio lighting is now baked offline into a compressed
+half-float atlas, and the duplicate initial scene draw has been removed. Six
+desktop/portrait comparisons require exact equality between procedural and baked
+rendered pixels. Missing and corrupt lighting responses were injected in a real
+browser: both preserved the poster, produced no application errors, and made only
+one lighting request despite subsequent scrolling and preference changes.
+
+Known software graphics drivers now retain the lossless-source poster and native
+CSS scroll effects without downloading the 3D module or lighting atlas. This follows
+observed startup stalls under software rendering; it uses reported graphics
+capability, with no user-agent or benchmark detection. The normal-browser audit
+verifies that fallback without overrides. Separate 3D behavior checks explicitly
+replace only the reported capability at the WebGL boundary, still render real
+frames, and disclose that setup. Lighthouse runs use unmodified capabilities;
+scores from this software-only machine describe the lighter poster mode.

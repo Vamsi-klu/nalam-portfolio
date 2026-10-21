@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import { gunzipSync } from 'node:zlib';
 import sharp from 'sharp';
 
 process.chdir(fileURLToPath(new URL('..', import.meta.url)));
@@ -20,6 +21,7 @@ const label = (process.env.AUDIT_LABEL || 'native-4k-local').replace(/[^a-zA-Z0-
  await page.getByRole('heading',{level:1}).waitFor();
  assert.match(await page.title(),/Ramachandra Nalam/);
  const base=page.url().split('?')[0].split('#')[0];
+ const hash=buffer=>createHash('sha256').update(buffer).digest('hex');
  const masters=[];
  for (const [file,width,height] of [
    ['signal-sculpture-4k.webp',3840,2160],
@@ -34,11 +36,30 @@ const label = (process.env.AUDIT_LABEL || 'native-4k-local').replace(/[^a-zA-Z0-
    assert.equal(metadata.width,width,file+' native width');
    assert.equal(metadata.height,height,file+' native height');
    assert.equal(metadata.format,'webp');
-   const hash=buffer=>createHash('sha256').update(buffer).digest('hex');
    const sha256=hash(body);
    assert.equal(sha256,hash(fs.readFileSync('public/'+file)),file+' committed source matches deployment');
    masters.push({file,width,height,bytes:body.length,sha256});
  }
+ const lightingFile='signal-environment.bin.gz';
+ const lightingResponse=await context.request.get(new URL(lightingFile,base).href);
+ assert.equal(lightingResponse.status(),200,'Studio lighting source response');
+ const lightingBody=await lightingResponse.body();
+ const lightingSha256=hash(lightingBody);
+ assert.equal(lightingSha256,hash(fs.readFileSync('public/'+lightingFile)),'Committed studio lighting matches deployment');
+ const lightingRaw=gunzipSync(lightingBody,{maxOutputLength:6_291_472});
+ assert.equal(lightingRaw.length,6_291_472,'Studio lighting header and RGBA half-float payload length');
+ assert.equal(lightingRaw.toString('ascii',0,4),'SIGE','Studio lighting format marker');
+ assert.equal(lightingRaw.readUInt32LE(4),1,'Studio lighting format version');
+ assert.equal(lightingRaw.readUInt32LE(8),768,'Studio lighting atlas width');
+ assert.equal(lightingRaw.readUInt32LE(12),1024,'Studio lighting atlas height');
+ let nonzeroSamples=0;
+ for(let offset=16;offset<lightingRaw.length;offset+=2) {
+   const sample=lightingRaw.readUInt16LE(offset);
+   if((sample & 0x7c00)===0x7c00) assert.fail('Studio lighting sample must be finite at byte '+offset);
+   if(sample & 0x7fff) nonzeroSamples++;
+ }
+ assert(nonzeroSamples>0,'Studio lighting must contain nonzero samples');
+ const environment={file:lightingFile,bytes:lightingBody.length,sha256:lightingSha256,decodedBytes:lightingRaw.length,decodedSha256:hash(lightingRaw),version:1,width:768,height:1024,nonzeroSamples};
  const heroImage=page.locator('.hero-artwork img');
  await heroImage.waitFor();
  assert.equal(await heroImage.evaluate(el=>el.complete && el.naturalWidth>0),true);
@@ -139,7 +160,7 @@ const label = (process.env.AUDIT_LABEL || 'native-4k-local').replace(/[^a-zA-Z0-
  assert.equal(hydrationErrors.length,0,JSON.stringify(hydrationErrors));
  assert.equal(errors.length,0,JSON.stringify(errors)); assert.equal(failed.length,0,JSON.stringify(failed));
  if(base.startsWith('https:'))assert.equal(consoleErrors.length,0,JSON.stringify(consoleErrors));
- const report={base,masters,imageChecks,anchors,widths,externalLinks:external.length,heroImage:true,keyboardTabs:true,clipboard:true,mobileMenu:true,reducedMotion:true,coldReducedMotion:true,noJsContent:true,errors,failed,consoleErrors};
+ const report={base,masters,environment,imageChecks,anchors,widths,externalLinks:external.length,heroImage:true,keyboardTabs:true,clipboard:true,mobileMenu:true,reducedMotion:true,coldReducedMotion:true,noJsContent:true,errors,failed,consoleErrors};
  fs.writeFileSync('output/playwright/'+label+'-audit.json',JSON.stringify(report,null,2)); console.log(JSON.stringify(report,null,2));
  await browser.close();
 })().catch(e=>{console.error(String(e.stack || e).replace(/([?&]_vercel_share=)[^&\s]+/g, '$1[redacted]'));process.exit(1)});

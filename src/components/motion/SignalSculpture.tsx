@@ -87,14 +87,37 @@ export function SignalSculpture() {
         // Changing the responsive source can cancel decode without breaking the image.
         await artwork.querySelector("img")?.decode().catch(() => undefined);
         if (ticket !== generation || !eligible()) return;
-        const context = canvas.getContext("webgl2", { alpha: true, antialias: true, powerPreference: "high-performance" });
+        const context = canvas.getContext("webgl2", {
+          alpha: true,
+          antialias: true,
+          powerPreference: "high-performance",
+          failIfMajorPerformanceCaveat: true,
+        });
         if (!context) { failed = true; return; }
-        const { createSignalScene } = await import("@/lib/signal-scene");
+        const rendererInfo = context.getExtension("WEBGL_debug_renderer_info");
+        const renderer = context.getParameter(
+          rendererInfo?.UNMASKED_RENDERER_WEBGL ?? context.RENDERER,
+        );
+        // Some software drivers accept the caveat flag but still stall page scrolling.
+        if (/swiftshader|llvmpipe|softpipe|software rasterizer|software renderer|microsoft basic render/i.test(String(renderer))) {
+          failed = true;
+          return;
+        }
+        const [{ createSignalScene }, environment] = await Promise.all([
+          import("@/lib/signal-scene"),
+          fetch("/signal-environment.bin.gz").then(async (response) => {
+            if (!response.ok || !response.body) throw new Error("Studio lighting unavailable");
+            return new Response(
+              response.body.pipeThrough(new DecompressionStream("gzip")),
+            ).arrayBuffer();
+          }),
+        ]);
         if (ticket !== generation || !eligible()) return;
         const styles = getComputedStyle(document.documentElement);
         scene = createSignalScene(canvas, {
           ...dimensions(),
           context,
+          environment,
           colors: {
             paper: styles.getPropertyValue("--on-dark").trim(),
             ink: styles.getPropertyValue("--black").trim(),

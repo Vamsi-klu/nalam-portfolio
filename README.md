@@ -27,9 +27,13 @@ There is no application backend or chat assistant.
 Artwork masters are rendered directly at 3840×2160, with a 3072×3840 portrait hero,
 and saved as lossless WebP. Next.js serves responsive variants at quality 95. The
 hero's CSS zoom is capped at 1.06×; its 3D geometry changes with scroll position.
-The eager poster remains available when motion or WebGL is unavailable. Runtime
+The eager poster remains available when motion or WebGL is unavailable. Machines
+reporting a software graphics driver use the poster with lightweight CSS scrolling;
+hardware-accelerated browsers receive the full 3D enhancement. Runtime
 canvas resolution is capped at DPR 2 and four million pixels on desktop or two
 million on phones. See [visual assets](docs/ASSETS.md) for dimensions and provenance.
+Studio lighting is baked during artwork export and loaded as a lossless texture,
+avoiding lighting generation when a visitor opens the page.
 
 ## Local development
 
