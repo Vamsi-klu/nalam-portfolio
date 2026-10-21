@@ -40,7 +40,7 @@ const CHARS = " .:-=+*#%@".split("");
  * be interpolated into `rgba(...)`. Duplicated from `--accent` in globals.css, which
  * canvas drawing can't read.
  */
-const ACCENT = "0, 199, 183";
+const ACCENT = "43, 102, 84";
 const IMAGE_SRC = "/profile.jpg";
 
 /** A character mid-flight: current position and velocity, plus where it belongs. */

@@ -1,36 +1,12 @@
-/**
- * Shared scroll-entrance wrapper — a 20px rise and fade the first time an element
- * scrolls into view.
- *
- * This exists so that sections can stay Server Components. `About`, `Work`, `Oss`,
- * `Builds`, and `Contact` all render on the server and pass their already-rendered
- * markup into this client wrapper as `children`, so the client bundle carries only the
- * animation, not the content. Prefer that shape over marking a whole section
- * `"use client"` just to animate it.
- *
- * Use this instead of writing Framer Motion props inline, so entrance timing stays
- * consistent across the site.
- *
- * @see docs/ARCHITECTURE.md
- */
-
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
-import type { ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
+import { useReducedMotion } from "framer-motion";
 
 type RevealProps = {
   children: ReactNode;
   className?: string;
-  /**
-   * Seconds to wait before animating. Stagger a list by scaling this with the index,
-   * e.g. `delay={0.06 * (i + 1)}`.
-   */
   delay?: number;
-  /**
-   * Element to render. Exists so the wrapper doesn't break list or landmark semantics —
-   * a `<Reveal>` inside a `<ul>` should be an `li`, not a `div`.
-   */
   as?: "div" | "li" | "section" | "article";
 };
 
@@ -40,28 +16,44 @@ export function Reveal({
   delay = 0,
   as = "div",
 }: RevealProps) {
-  const reduce = useReducedMotion();
-  const Component = motion[as];
-
-  // Reduced motion: render the final state immediately with no animation machinery.
-  //
-  // Known wart — this ignores `as`, so a `<Reveal as="li">` inside a `<ul>` becomes a
-  // `<div>` child of `<ul>`. It renders fine but is technically invalid HTML. Threading
-  // `as` through here would fix it.
-  if (reduce) {
-    return <div className={className}>{children}</div>;
-  }
-
+  const element = useRef<HTMLElement>(null);
+  const reducedMotion = useReducedMotion();
+  useEffect(() => {
+    const node = element.current;
+    if (!node || reducedMotion || !("IntersectionObserver" in window)) return;
+    let animation: Animation | undefined;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        animation = node.animate(
+          [
+            { opacity: 0, transform: "translateY(16px)" },
+            { opacity: 1, transform: "translateY(0)" },
+          ],
+          {
+            duration: 600,
+            delay: delay * 1000,
+            easing: "cubic-bezier(.22,1,.36,1)",
+            fill: "backwards",
+          },
+        );
+        observer.disconnect();
+      },
+      { threshold: 0.08 },
+    );
+    observer.observe(node);
+    return () => {
+      observer.disconnect();
+      animation?.cancel();
+    };
+  }, [delay, reducedMotion]);
+  const Component = as;
   return (
-    // `once: true` means the animation never replays on scroll-back, which keeps long
-    // scrolls calm. The negative viewport margin delays the trigger until the element is
-    // ~40px past the edge, so it isn't already half-visible when it starts.
     <Component
+      ref={(node: HTMLElement | null) => {
+        element.current = node;
+      }}
       className={className}
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.55, ease: "easeOut", delay }}
     >
       {children}
     </Component>

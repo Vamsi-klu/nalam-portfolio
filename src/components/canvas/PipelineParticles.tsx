@@ -32,7 +32,7 @@ import { cn } from "@/lib/utils";
  * is duplicated here from `--accent` in globals.css. Changing the theme accent means
  * changing this too (and the RGB triple in AsciiPortrait).
  */
-const ACCENT = "#00c7b7";
+const ACCENT = "#2b6654";
 const STAGES = ["Extract", "Transform", "Serve"] as const;
 /** Pointer influence radius, in CSS pixels. */
 const REPEL_RADIUS = 90;
@@ -143,7 +143,7 @@ export function PipelineParticles({ className }: PipelineParticlesProps) {
       const bandH = height * 0.42;
 
       ctx.save();
-      ctx.strokeStyle = "rgba(0, 199, 183, 0.12)";
+      ctx.strokeStyle = "rgba(43, 102, 84, 0.12)";
       ctx.lineWidth = 1;
       ctx.setLineDash([4, 8]);
       ctx.beginPath();
@@ -162,9 +162,9 @@ export function PipelineParticles({ className }: PipelineParticlesProps) {
 
         ctx.beginPath();
         ctx.arc(x, bandY, nodeR, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(0, 199, 183, 0.08)";
+        ctx.fillStyle = "rgba(43, 102, 84, 0.08)";
         ctx.fill();
-        ctx.strokeStyle = "rgba(0, 199, 183, 0.45)";
+        ctx.strokeStyle = "rgba(43, 102, 84, 0.45)";
         ctx.lineWidth = 1.5;
         ctx.stroke();
 
@@ -178,7 +178,7 @@ export function PipelineParticles({ className }: PipelineParticlesProps) {
         if (i < STAGES.length - 1) {
           const nextX =
             padX + (usable * (i + 1.5)) / STAGES.length;
-          ctx.strokeStyle = "rgba(0, 199, 183, 0.25)";
+          ctx.strokeStyle = "rgba(43, 102, 84, 0.25)";
           ctx.lineWidth = 1;
           ctx.beginPath();
           ctx.moveTo(x + nodeR + 4, bandY);
@@ -191,7 +191,7 @@ export function PipelineParticles({ className }: PipelineParticlesProps) {
           ctx.lineTo(nextX - nodeR - 10, bandY - 4);
           ctx.lineTo(nextX - nodeR - 10, bandY + 4);
           ctx.closePath();
-          ctx.fillStyle = "rgba(0, 199, 183, 0.35)";
+          ctx.fillStyle = "rgba(43, 102, 84, 0.35)";
           ctx.fill();
         }
 
@@ -258,8 +258,8 @@ export function PipelineParticles({ className }: PipelineParticlesProps) {
           p.x,
           p.y,
         );
-        gradient.addColorStop(0, "rgba(0, 199, 183, 0)");
-        gradient.addColorStop(1, `rgba(0, 199, 183, ${p.alpha * 0.45})`);
+        gradient.addColorStop(0, "rgba(43, 102, 84, 0)");
+        gradient.addColorStop(1, `rgba(43, 102, 84, ${p.alpha * 0.45})`);
         ctx.strokeStyle = gradient;
         ctx.lineWidth = p.radius * 0.9;
         ctx.lineCap = "round";
@@ -270,7 +270,7 @@ export function PipelineParticles({ className }: PipelineParticlesProps) {
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(0, 199, 183, ${p.alpha})`;
+        ctx.fillStyle = `rgba(43, 102, 84, ${p.alpha})`;
         ctx.fill();
       }
 

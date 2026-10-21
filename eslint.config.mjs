@@ -33,6 +33,8 @@ const eslintConfig = defineConfig([
     // Default ignores of eslint-config-next:
     ".next/**",
     "out/**",
+    "output/**",
+    ".playwright-cli/**",
     "build/**",
     "next-env.d.ts",
   ]),

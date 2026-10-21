@@ -1,179 +1,77 @@
 # Architecture
 
-This is a single-route Next.js App Router site. There is no database, no API route, no
-`fetch` at runtime, and no dynamic rendering. Every byte of content is a TypeScript
-constant that gets prerendered into static HTML at build time. The interesting
-engineering is all on the client: two `<canvas>` animations and a scroll-driven
-navigation system.
+The portfolio has one Next.js App Router page, prerendered from TypeScript content.
+There is no database, API route, Server Action, application data fetch, or chat
+assistant. Client components handle only interaction and motion.
 
-## Route tree
+## Page composition
 
-There is exactly one route.
+`src/app/page.tsx` renders a skip link, `NavBar`, the main landmark, and `Footer`.
+The main content is ordered as follows:
 
-```
-src/app/
-├── layout.tsx    Root layout (Server Component)
-├── page.tsx      / (Server Component)
-├── globals.css
-└── favicon.ico
+```text
+Hero → Impact → Work → Oss → Builds → About → Experience → Contact
 ```
 
-`layout.tsx` does four things: loads the Geist and Geist Mono fonts through
-`next/font/google` and exposes them as the `--font-geist-sans` / `--font-geist-mono`
-CSS variables, exports the static `metadata` object, sets up the flex column that pins
-the footer to the bottom, and mounts `<Analytics />` from `@vercel/analytics/next`.
+Each section has a stable anchor. Navigation labels and destinations come from
+`nav` in `src/content/site.ts`; its order follows the page. Impact has no navigation
+entry. `SidebarNav` remains in the repository but is not mounted.
 
-`page.tsx` is pure composition — it renders the chrome and then the eight sections in
-display order:
+`layout.tsx` loads Geist Sans and Geist Mono, exports metadata, imports global styles,
+and mounts Vercel Analytics. Canonical and OpenGraph URLs use `site.domain`. The profile
+photo supplies the social preview image, and `public/brand.svg` supplies the icon.
 
-```
-NavBar → SidebarNav → main( Hero · About · Impact · Experience · Work · Oss · Builds · Contact ) → Footer
-```
+## Server and client components
 
-Adding a section means creating the component, adding it to `page.tsx`, and adding an
-entry to the `nav` array in `src/content/site.ts` so both navigations pick it up.
+| Component | Rendering responsibility |
+| --- | --- |
+| Hero, Impact, Work, Oss, Builds, About, Contact, Footer | Server-rendered content and layout |
+| NavBar | Scroll treatment and native mobile navigation dialog |
+| DataSculpture | Decorative SVG with pause/resume state and reduced-motion support |
+| Reveal | Scroll entrance around server-rendered children |
+| Experience | Selected tab, keyboard navigation, and associated panels |
+| CopyEmail | Clipboard interaction and accessible success/error feedback |
 
-## The server/client boundary
+Hero stays a Server Component and mounts `DataSculpture` as a small client island.
+Impact prints the final metric values immediately. About renders the real profile photo
+at `/profile.jpg`, with explicit dimensions and lazy loading.
 
-Server Components are the default and most of the page stays on the server. A component
-only opts into `"use client"` when it genuinely needs browser state or APIs.
-
-**Server Components** — `layout`, `page`, `About`, `Work`, `Oss`, `Builds`, `Contact`,
-`Footer`. These are static markup driven by `site.ts`.
-
-**Client Components** — `NavBar` (menu state, scroll listener), `SidebarNav`
-(IntersectionObserver), `Hero` (typing animation), `Impact` (count-up on scroll),
-`Experience` (tab state), `Reveal` (viewport-triggered motion), `AsciiPortrait` and
-`PipelineParticles` (canvas and pointer events).
-
-The pattern that makes this work is passing server-rendered children into a client
-wrapper. `About` is a Server Component, but it wraps its paragraphs in `<Reveal>`, which
-is a Client Component. The paragraphs are still rendered on the server and handed to
-`Reveal` as an already-rendered `children` slot, so the client bundle only carries the
-animation wrapper, not the content. Follow this shape rather than marking whole
-sections `"use client"` to get one animation.
+Pass server-rendered children into `Reveal` when a section needs an entrance effect.
+Keep content in `src/content/site.ts`, including the `editorial` export for headings,
+labels, and interaction messages.
 
 ## Motion and reduced motion
 
-Every animated surface has a reduced-motion path, and there are three separate
-mechanisms because the animations live in three different places.
+`DataSculpture` draws an SVG using palette variables. CSS animates its transform;
+there is no canvas loop or per-frame React state. A button pauses and resumes the
+motion. Reduced-motion preferences stop the animation and hide that control.
 
-1. **React-driven motion** uses `useReducedMotion()` from Framer Motion. `Reveal`
-   returns a plain `<div>` with no animation props when it's on. `Hero` skips the
-   typing animation and renders the final string. `Impact` renders the final metric
-   instead of counting up. `Experience` drops the `layoutId` shared-element indicator.
-2. **CSS animation** is neutralized by the `@media (prefers-reduced-motion: reduce)`
-   block in `globals.css`, which clamps every animation and transition to `0.01ms` and
-   switches `scroll-behavior` back to `auto`.
-3. **Canvas animation** sits outside React's render cycle, so both canvas components
-   query `window.matchMedia("(prefers-reduced-motion: reduce)")` directly.
-   `PipelineParticles` also subscribes to `change` on that media query so toggling the
-   OS setting starts or stops the loop live; `AsciiPortrait` swaps to a static `<img>`.
+`Reveal` uses `IntersectionObserver` and the Web Animations API for a single fade and
+16px entrance. Content is visible in the server HTML and remains visible without
+JavaScript. Its `as` prop preserves the requested element in every motion mode.
+Cleanup disconnects the observer and cancels an active animation.
 
-If you add motion anywhere, wire up the matching opt-out. It is a hard requirement in
-this codebase, not a nice-to-have.
+The global reduced-motion media query disables CSS animation, transitions, and smooth
+scrolling. `useReducedMotion()` also prevents the JavaScript entrance effect.
 
-## Canvas components
+## Navigation and contact
 
-Both live in `src/components/canvas/` and share the same skeleton: a `useEffect` that
-grabs the 2D context, caps the device pixel ratio at 2 (`Math.min(devicePixelRatio, 2)`)
-to avoid pathological fill rates on high-DPI screens, drives a `requestAnimationFrame`
-loop, and returns a cleanup function that cancels the frame and removes every listener.
-Mutable per-frame state is held in `useRef`, never `useState`, so the animation loop
-never triggers a React re-render.
+The sticky header uses ordinary anchor links. Below the desktop breakpoint, its menu
+opens a native `<dialog>` with modal focus behavior and Escape dismissal. It locks
+background scrolling while open, closes after selection or a switch to desktop width,
+and restores focus to its trigger.
 
-### `AsciiPortrait`
+Experience uses a vertical ARIA tablist with roving focus, Up/Down, Home, and End keys.
+Each tab controls a labelled panel. Contact offers direct links and a separate
+`CopyEmail` component; clipboard errors leave the visible address available.
 
-Renders `/profile.jpg` as a field of drifting ASCII characters.
+## Styles and retained files
 
-The image is drawn once to an offscreen canvas at the target size, then
-`getImageData` samples it on a grid — the column step is `fontSize * 0.7` and the row
-step is `fontSize * 1.1`, which compensates for the fact that monospace glyphs are
-taller than they are wide. Each sample's brightness picks a character out of the ramp
-`" .:-=+*#%@"`, darkest to lightest, and sets that particle's base alpha. Samples that
-are nearly transparent or nearly black are dropped.
+Global tokens and shared layout live in `src/app/globals.css`. Section-specific styles
+live in `src/components/sections/profile.css` and `work.css`. See the
+[design system](DESIGN-SYSTEM.md) for the palette and shared classes.
 
-Those raw samples are cached per size in a ref, so a resize back to a size already seen
-skips the expensive image processing. Each particle then starts scattered up to a few
-hundred pixels from its target and is pulled home by a spring whose strength ramps up
-over the first 2.5 seconds, with a staggered per-particle delay so the portrait
-assembles rather than snapping. The pointer repels particles inside a radius of 20% of
-the canvas, and particles settle and freeze once they stop moving and nothing is
-interacting.
-
-Font size drops from 7px to 5px below 280px wide, and the canvas size itself is
-computed by `calcSize` from the window width. Reduced motion or a failed image load
-both fall back to a static `<img>`.
-
-That fallback path is also where the repo's one standing lint error lives — it sets
-state synchronously inside an effect, which the React Compiler rules now flag. See
-[`CONTRIBUTING.md`](../CONTRIBUTING.md#one-pre-existing-lint-error).
-
-### `PipelineParticles`
-
-Draws an Extract → Transform → Serve pipeline: dashed guide rails, a node circle per
-stage, arrows between stages, monospace labels, and particles streaming left to right
-with gradient trails. Particles hold a lane (`baseY`), drift back toward it, are repelled
-by the pointer within 90px, and wrap around to the left edge with a fresh lane offset when
-they exit the right. Particle count scales with canvas area, floored at 28. A
-`ResizeObserver` on the parent element re-derives dimensions and repopulates the field.
-
-**This component is currently not mounted anywhere.** It is complete and working but
-`page.tsx` doesn't render it. Drop it into a section as an absolutely-positioned
-background layer when you want it; it sizes itself to its parent, so the parent needs
-`position: relative` and a real height.
-
-## Navigation
-
-The `nav` array in `site.ts` is the single source for both navigations, and both derive
-their labels and hrefs from it, so a new entry appears in both automatically.
-
-`NavBar` is fixed to the top. It tracks `window.scrollY > 12` to fade in a translucent
-backdrop and shadow, and it owns a full-screen mobile overlay that locks `body` scroll
-while open. `SidebarNav` is the vertical rail on large screens; an `IntersectionObserver`
-with `rootMargin: "-35% 0px -45% 0px"` narrows the trigger band to roughly the middle
-fifth of the viewport, and the entry with the highest intersection ratio wins.
-
-Note that `impact` is a rendered section but is deliberately absent from `nav`, so it
-has no nav link and the sidebar doesn't highlight it while you scroll through it.
-
-Because the site is one route, all navigation is anchor-based. `globals.css` sets
-`html { scroll-behavior: smooth }`. Next.js 16 stopped overriding `scroll-behavior`
-during router navigations unless you set `data-scroll-behavior="smooth"` on `<html>` —
-that override is irrelevant here since there are no router navigations, so smooth
-anchor scrolling just works.
-
-## Images
-
-The site intentionally uses raw `<img>` for the profile photo rather than `next/image`,
-with a targeted `// eslint-disable-next-line @next/next/no-img-element` at each site
-(`About.tsx` and the `AsciiPortrait` fallback). The reason is that the same file is fed
-to a canvas via `getImageData`, which needs a predictable, unprocessed URL — the
-optimizer's transformed output would defeat the pixel sampling. If you add a decorative
-image that never touches a canvas, use `next/image` and drop the escape hatch.
-
-## Metadata
-
-`layout.tsx` exports a static `metadata` object with `metadataBase`, OpenGraph, and
-Twitter fields. There is no `opengraph-image` file, so despite
-`twitter.card: "summary_large_image"` the share cards currently render without an image.
-Adding `src/app/opengraph-image.tsx` (or a static `opengraph-image.png`) would fix that;
-see `node_modules/next/dist/docs/01-app/01-getting-started/14-metadata-and-og-images.md`.
-
-## Conventions worth knowing
-
-- The `@/*` path alias maps to `./src/*`. Use it; there are no deep relative imports in
-  this codebase.
-- `cn()` in `src/lib/utils.ts` composes `clsx` and `tailwind-merge`. Use it whenever
-  class names are conditional so later Tailwind utilities correctly override earlier
-  ones.
-- Sections are named exports (`export function About()`), not default exports. Only
-  `layout.tsx` and `page.tsx` use default exports, because the framework requires it.
-- `src/components/sections/index.ts` is a partial barrel that only re-exports four of
-  the eight sections, and nothing imports it — `page.tsx` imports each section directly.
-  Import directly and treat the barrel as vestigial.
-- `GithubIcon` is defined three times (`ui/icons.tsx`, `Builds.tsx`, `Contact.tsx`) and
-  `LinkedinIcon` twice, in two different visual styles: the `ui/icons.tsx` pair are
-  stroked Lucide-style outlines sized by a `size` prop, while the copies inside
-  `Builds` and `Contact` are solid filled brand glyphs sized by a `className`. Prefer
-  `@/components/ui/icons` for new work.
+`AsciiPortrait`, `PipelineParticles`, and `SidebarNav` are retained legacy components,
+not part of the mounted page. The existing `AsciiPortrait` lint error remains a separate
+baseline issue. The old typewriter dependency is still installed but is not used by
+Hero. The section barrel is unused; page composition imports components directly.

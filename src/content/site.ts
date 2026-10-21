@@ -39,7 +39,7 @@ export const site = {
   github: "https://github.com/Vamsi-klu",
   githubUser: "Vamsi-klu",
   linkedin: "https://www.linkedin.com/in/ramachandra-nalam",
-  domain: "https://nalamportfolio.dev",
+  domain: "https://nalam-portfolio.vercel.app",
   /**
    * Dangling: no component reads this, and `public/resume.pdf` does not exist.
    * Either ship the file and link it, or drop the field.
@@ -65,7 +65,10 @@ export const site = {
   /** Status chips rendered as `label · value` pairs in `About`. */
   now: [
     { label: "Building", value: "Reliable batch & streaming data platforms" },
-    { label: "Learning", value: "Rust + OpenTelemetry for high-perf pipelines" },
+    {
+      label: "Learning",
+      value: "Rust + OpenTelemetry for high-perf pipelines",
+    },
     { label: "Contributing", value: "Airflow, Dagster, Airbyte, Pinot" },
     { label: "Exploring", value: "Open-source collabs & community talks" },
   ],
@@ -213,7 +216,7 @@ export const work: WorkItem[] = [
     summary:
       "Public PRs across Airflow, Pinot, and related projects — hooks, operators, docs, and reliability fixes anyone can review on GitHub.",
     stack: ["Airflow", "Pinot", "Python", "CI", "Docs"],
-    metrics: ["100+ PRs", "20+ merges", "Public diffs"],
+    metrics: ["100+ PRs", "29+ merges", "Public diffs"],
   },
 ];
 
@@ -250,8 +253,6 @@ export const builds: BuildItem[] = [
     description:
       "Job hunt Kanban with drag-and-drop stages, Google Sheets sync, JWT auth, and email alerts.",
     stack: ["JavaScript", "React", "Vercel"],
-    github: "https://github.com/Vamsi-klu/jobkanban",
-    demo: "https://jobkanban.vercel.app",
   },
   {
     id: "prompt-optimizer",
@@ -259,7 +260,6 @@ export const builds: BuildItem[] = [
     description:
       "Universal prompt scorer/optimizer across 7 dimensions with Gemini routing and history IDs.",
     stack: ["TypeScript", "Gemini", "CLI"],
-    github: "https://github.com/Vamsi-klu/prompt-optimizer",
   },
   {
     id: "ytsummary",
@@ -304,7 +304,7 @@ export type OssPr = {
  * together.
  */
 export const oss = {
-  headline: "100+ PRs · 20+ merged across the modern data stack",
+  headline: "100+ PRs · 29+ merged across the modern data stack",
   summary:
     "I don't just use the data stack — I fix it upstream. Production merges into Apache Airflow providers, APIs, tests, and Apache Pinot docs.",
   upstreams: ["Airflow", "Pinot", "Dagster", "Airbyte", "Flink", "Polars"],
@@ -366,13 +366,98 @@ export const oss = {
  */
 export const nav = [
   { id: "intro", label: "home" },
+  { id: "work", label: "work" },
+  { id: "oss", label: "open source" },
+  { id: "builds", label: "builds" },
   { id: "about", label: "about" },
   { id: "experience", label: "experience" },
-  { id: "work", label: "work" },
-  { id: "oss", label: "oss" },
-  { id: "builds", label: "builds" },
   { id: "contact", label: "contact" },
 ] as const;
+
+export const editorial = {
+  brand: "rn.",
+  navigation: {
+    label: "Main navigation",
+    open: "Open navigation",
+    close: "Close navigation",
+    contact: "Let’s talk",
+    home: "rn. — Ramachandra Nalam, home",
+    skip: "Skip to content",
+  },
+  hero: {
+    title: "Making data",
+    accent: "mean more.",
+    description:
+      "I build reliable data platforms and contribute to the open-source tools behind them.",
+    work: "Explore my work",
+    source: "The open-source side",
+    location: "Based in Seattle",
+    footnote: "Thinking at scale",
+    scroll: "A FEW THINGS I’VE BUILT",
+    artTop: "COMPLEXITY, CONNECTED.",
+    artBottom: "DATA → POSSIBILITY",
+    artIndex: "01 / ∞",
+    pause: "Pause motion",
+    resume: "Resume motion",
+  },
+  work: {
+    eyebrow: "01 / SELECTED WORK",
+    title: "Built for the",
+    accent: "real world.",
+    note: "Reliable systems. Useful data.",
+    details: "Explore experience",
+  },
+  oss: {
+    eyebrow: "02 / OPEN SOURCE",
+    title: "Better tools.",
+    accent: "Built together.",
+    all: "Explore all contributions",
+    label: "SELECTED PUBLIC CONTRIBUTIONS",
+  },
+  builds: {
+    eyebrow: "03 / PERSONAL BUILDS",
+    title: "Ideas, made",
+    accent: "real.",
+    code: "View source",
+    demo: "Live project",
+  },
+  about: {
+    eyebrow: "04 / A LITTLE ABOUT ME",
+    title: "Curious by nature.",
+    accent: "Engineer by craft.",
+    skills: "Tools I work with",
+    portrait: "THE PERSON BEHIND THE PIPELINES",
+  },
+  experience: {
+    eyebrow: "05 / THE JOURNEY",
+    title: "Good work.",
+    accent: "Great company.",
+    note: "Different challenges. The same care for getting it right.",
+  },
+  contact: {
+    eyebrow: "06 / WHAT’S NEXT?",
+    title: "Something good",
+    accent: "starts with hello.",
+    description:
+      "Have an interesting data challenge, a role in mind, or just a good question?",
+    github: "GitHub",
+    linkedin: "LinkedIn",
+    email: "Send an email",
+    copy: "Copy email",
+    copied: "Email copied",
+    copyError: "Select and copy the email address above.",
+  },
+  impact: { label: "A little context, in numbers." },
+  footer: {
+    credit: "Designed with care. Built for the web.",
+    top: "Back to top",
+  },
+  metadata: {
+    title: "Ramachandra Nalam | Data Engineer",
+    description:
+      "Data engineering, reliable platforms, and open-source contributions. Explore the work of Ramachandra Nalam, a data engineer based in Seattle.",
+  },
+} as const;
 
 /**
  * Currently unused — no component imports this. Kept for a future education section.

@@ -1,96 +1,73 @@
 # Deployment
 
-The site is hosted on Vercel at [nalamportfolio.dev](https://nalamportfolio.dev). There
-is nothing custom about the pipeline — it's a stock Next.js project with zero
-configuration, which is deliberate.
+The existing Vercel project `nalam-portfolio` is connected to
+`Vamsi-klu/nalam-portfolio`. Its production branch is `main` and public URL is
+[nalam-portfolio.vercel.app](https://nalam-portfolio.vercel.app). Use this project for
+previews and production updates.
 
-## What gets deployed
+## Build configuration
 
-`next build` prerenders the whole site as static content:
-
-```
-Route (app)
-┌ ○ /
-└ ○ /_not-found
-
-○  (Static)  prerendered as static content
-```
-
-There are no Server Actions, no route handlers, no dynamic rendering, and no runtime
-data fetching, so every request is served from the CDN. Nothing in the app reads
-`process.env`, so **there are no environment variables to configure** — a fresh import
-builds and runs correctly with no setup.
-
-Keep it that way if you can. Introducing a runtime dependency would turn a
-CDN-only site into one with cold starts and a failure mode, for a portfolio that
-changes a few times a year.
-
-## First-time setup
-
-1. Push the repository to GitHub.
-2. Import it on Vercel. Framework preset, build command, output directory, and install
-   command are all detected correctly — accept the defaults.
-3. Add `nalamportfolio.dev` under **Settings → Domains** and follow the DNS
-   instructions Vercel gives you.
-
-After that, pushes to `main` deploy to production and pull requests get preview URLs
-automatically.
-
-## The domain is hardcoded
-
-`src/app/layout.tsx` sets `metadataBase: new URL("https://nalamportfolio.dev")` and
-repeats the domain in the OpenGraph block, and `site.domain` in
-`src/content/site.ts` holds it a third time. Preview deployments therefore advertise the
-production domain in their metadata, which is fine for a portfolio — crawlers should
-never index a preview anyway — but it does mean a domain change requires editing all
-three places.
-
-## Node version
-
-Next.js 16 requires Node.js 20.9 or newer; Vercel's current default satisfies this. If
-you ever need to pin it, set it under **Settings → Node.js Version** rather than adding
-an `engines` field, so local and CI behavior stay in sync with the platform.
-
-## Analytics
-
-`layout.tsx` mounts `<Analytics />` from `@vercel/analytics/next`, which enables Vercel
-Web Analytics — pageviews and visitor counts, no cookies, no consent banner needed. It
-only reports from deployments on Vercel, so you'll see nothing in local development;
-that's expected, not a misconfiguration.
-
-Enable Web Analytics for the project in the Vercel dashboard, otherwise the component
-sends data nowhere. Note the import path is `@vercel/analytics/next`, not the bare
-`@vercel/analytics` — the framework-specific entry point is what handles App Router
-route tracking.
-
-## Checks before pushing
-
-`next build` stopped running ESLint in Next.js 16 and `next lint` was removed entirely,
-so a broken lint rule will not fail the build. Run both locally:
+Use the Next.js framework preset and the repository's standard commands. The project
+uses Node.js 24 on Vercel; local Next.js 16 development requires Node.js 20.9 or newer.
 
 ```bash
+npm ci
 npm run lint
 npm run build
 ```
 
-The build does still run TypeScript, so type errors will fail it.
+The page is designed for static prerendering. It has no application API, database,
+Server Actions, chat assistant, or required application environment variables.
+Vercel Analytics is the only included analytics integration.
 
-Be aware that `npm run lint` currently reports one pre-existing error in
-`AsciiPortrait.tsx` — see [`CONTRIBUTING.md`](../CONTRIBUTING.md#one-pre-existing-lint-error).
-It does not block deploys, precisely because the build no longer lints.
+Next.js builds check TypeScript but do not run ESLint. The unused
+`AsciiPortrait.tsx` has one pre-existing `react-hooks/set-state-in-effect` error;
+record it separately and check that changes introduce no additional errors. These
+commands are a validation procedure, not a record of a completed deployment.
 
-## Local production preview
+## Canonical URL and metadata
 
-To check the real production output rather than the dev server:
+`site.domain` in `src/content/site.ts` is the URL source of truth. `layout.tsx` uses
+it for `metadataBase`, the canonical link, and OpenGraph URLs. Preview builds retain
+the production canonical URL. The profile photo supplies the social image.
+
+To adopt another domain, first configure and verify it in the same Vercel project,
+then update `site.domain`. A metadata change alone does not configure DNS or attach a
+domain to a deployment.
+
+## Preview and browser checks
+
+Use a branch preview before publishing to production. The Git integration has
+previously created branch previews; verify that a new deployment points to the
+intended commit and reaches `READY`. Protected deployment URLs may require a Vercel
+session or temporary share link. Do not commit or publish authentication links.
+
+Test every deployed revision in a real browser:
+
+- Check desktop and mobile layouts, long-page scrolling, and horizontal overflow.
+- Follow the hero and navigation anchors; open and close the mobile menu with both
+  pointer and keyboard, including Escape and focus restoration.
+- Use the Experience tabs with Up/Down, Home, and End keys.
+- Pause and resume the sculpture, then repeat with reduced motion enabled.
+- Check the page with JavaScript disabled for visible content and usable links.
+- Test email copying and its failure feedback, mail/social links, public PRs, and
+  personal-project links. Keep unavailable destinations out of the interface.
+- Inspect console errors, failed requests, canonical metadata, and image loading.
+
+Fix issues, deploy the revised commit, and repeat the browser checks on that URL.
+After production publication, repeat the smoke checks on the public production URL.
+
+## Local production preview and analytics
 
 ```bash
 npm run build
 npm run start
 ```
 
-This matters more than usual here, because the dev server and the production build
-differ in ways that affect this site specifically — font loading, the static
-prerender, and the timing of the canvas animations on a cold page load.
+Inspect the production build as well as the development server, especially fonts,
+responsive layout, and initial motion. Next.js keeps development output in
+`.next/dev` and production output in `.next`.
 
-Since Next.js 16, `next dev` writes to `.next/dev` and `next build` writes to `.next`,
-so the two no longer clobber each other and can run at the same time.
+`layout.tsx` mounts `Analytics` from `@vercel/analytics/next`. Enable Web Analytics
+in the Vercel project dashboard to receive deployment pageviews. Local development
+is not evidence that production analytics are configured.
